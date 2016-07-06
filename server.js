@@ -8,7 +8,7 @@ var database = require(__dirname + '/database')
 
 var port = (process.argv[2] == null) ? 8080 : process.argv[2]
 
-var use_db = false
+var use_db = (process.argv[3] == 'true') ? true : false
 
 var time_to_play = 30
 
