@@ -255,7 +255,7 @@ function collectBigRock(player, rock){
     if(inventory.pocket == null){
         rock.kill()
         inventory.pocket = 'big rock'
-        socket.emit('rocks', 'big')
+        socket.emit('rocks', '"big"')
         document.getElementById("pocketlabel").innerHTML = "Pocket: big rock"
     }else{
         console.log("Pocket not empty.")
@@ -266,7 +266,7 @@ function collectSmallRock(player, rock){
     if(inventory.pocket == null){
         rock.kill()
         inventory.pocket = 'small rock'
-        socket.emit('rocks', 'small')
+        socket.emit('rocks', '"small"')
         document.getElementById("pocketlabel").innerHTML = "Pocket: small rock"
     }else{
         console.log("Pocket not empty.")
@@ -304,7 +304,7 @@ function shootRock(){
             rock.body.velocity.x = speed
         }
         inventory.pocket = null
-        socket.emit('rocks', 'empty')
+        socket.emit('rocks', '"empty"')
         document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
     }else{
         console.log("Pocket empty; cannot throw rock.")

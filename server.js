@@ -6,9 +6,9 @@ var server = http.createServer(app)
 var io = require('socket.io').listen(server)
 var database = require(__dirname + '/database')
 
-var port = (process.argv[2] == null) ? 8080 : process.argv[2]
-
-var use_db = (process.argv[3] == 'true') ? true : false
+var time_to_play = (process.argv[2] == null) ? 30 : process.argv[2]
+var port = (process.argv[3] == null) ? 8080 : process.argv[3]
+var use_db = (process.argv[4] == 'true') ? true : false
 
 var time_to_play = 30
 
@@ -23,14 +23,6 @@ if(use_db){
 }
 
 app.use(express.static(__dirname));
-
-app.get('/', function(request, response){
-	if(request.params[0] == 'game.html'){
-		response.sendFile(__dirname + '/game.html')
-	} else {
-		response.sendFile(__dirname + '/index.html')
-	}
-})
 
 app.get(/^(.+)$/, function(req, res){ 
      console.log('static file request : ' + req.params);
@@ -75,14 +67,16 @@ io.on('connection', function(socket){
 		}
 	})
 
-	socket.on('rocks', function(rocks){
-		//update for new inputs ('small', 'big', 'empty')
+	socket.on('rocks', function(rock){
 		if(use_db){
-			database.updatePlayer(socket_id, 'rocks', rocks)
+			database.updatePlayer(socket_id, 'rocks', rock)
 		}
 	})
 })
 
 server.listen(port, function(){
 	console.log("Game server listening port " + port + ".")
+	if(use_db){
+		console.log("Logging in mysql database.")
+	}
 })
