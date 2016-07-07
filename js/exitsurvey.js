@@ -47,8 +47,8 @@ function make_slides(f){
 }
 
 function init(){
-    exp.user = getParams.getParams('user')
-    exp.condition = getParams.getParams('condition')
+    exp.user = getParam.getParams('user')
+    exp.condition = getParam.getParams('condition')
 	// exp.condition = _.sample(["a", "b"])
 	exp.responses = {}
 	exp.system = {
