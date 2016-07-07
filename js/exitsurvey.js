@@ -40,7 +40,7 @@ function make_slides(f){
 			exp.data= {
          		"system" : exp.system,
          		"condition" : exp.condition,
-         		"response" : exp.response
+         		"response" : exp.response,
           		"time_in_minutes" : 2 //configure this somehow
     		};
 			setTimeout(function() {turk.submit(exp.data);}, 1000);

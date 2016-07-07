@@ -1,17 +1,15 @@
-// var getParam = function(param){
-//     var pageURL = decodeURIComponent(window.location.search.substring(1)),
-//         URLVariables = pageURL.split('&'),
-//         param_name
+var getParam = function(param){
+    var pageURL = decodeURIComponent(window.location.search.substring(1)),
+        URLVariables = pageURL.split('&'),
+        param_name
 
-//     for (var i = 0; i < URLVariables.length; i++){
-//         param_name = URLVariables[i].split('=')
-//         if(param_name[0] == param){
-//             return param_name[1] === undefined ? true : param_name[1]
-//         }
-//     }
-// }
-
-fs = require('fs')
+    for (var i = 0; i < URLVariables.length; i++){
+        param_name = URLVariables[i].split('=')
+        if(param_name[0] == param){
+            return param_name[1] === undefined ? true : param_name[1]
+        }
+    }
+}
 
 function make_slides(f){
 	var slides = {}
@@ -42,11 +40,11 @@ function make_slides(f){
 				$(".err").show()
 			}else{
 				exp.user = response
-				var destination = "http://cocolabpi.com/game.html?user=" + exp.user + '&condition=' + exp.condition
+				var destination = "/game.html?user=" + exp.user + '&condition=' + exp.condition
 				var proceed = window.confirm("Are you ready to be redirected to the game?")
 				if (proceed){
 					setTimeout(function(){
-						window.location = destination
+						window.location.pathname = destination
 					}, 1000)
 				}
 			}
