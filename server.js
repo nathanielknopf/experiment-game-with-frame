@@ -45,6 +45,11 @@ io.on('connection', function(socket){
 	var condition = (query.condition) ? query.condition : 'a'
 	var user = (query.user) ? query.user : 'Undefined'
 
+	var inventory = {
+		pocket: 'empty',
+		points: 0
+	}
+
 	console.log("Connection from user: " + user + ".")
 
 	if(use_db){
@@ -67,14 +72,18 @@ io.on('connection', function(socket){
 	timer(time_to_play)
 
 	socket.on('apples', function(apples){
+		invetory.points += 1
 		if(use_db){
-			database.updatePlayer(socket_id, 'apples', apples)
-		}
+			database.updatePlayer(user, socket_id, inventory.pocket, inventory.points)
+		// 	database.updatePlayer(socket_id, 'apples', apples)
+		// }
 	})
 
 	socket.on('rocks', function(rock){
+		inventory.pocket = rock
 		if(use_db){
-			database.updatePlayer(socket_id, 'rocks', rock)
+			database.updatePlayer(user, socket_id, inventory.pocket, inventory.points)
+			// database.updatePlayer(socket_id, 'rocks', rock)
 		}
 	})
 })

@@ -43,12 +43,16 @@ var queryThis = function(to_query){
 }
 
 var addPlayer = function(name, ID){
-	queryThis('INSERT INTO ' + table + ' VALUES("' + name + '", "' + ID + '", 0, 0, "' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + table + ' VALUES("' + name + '", "' + ID + '", "empty", 0, "' + getTimestamp() + '")')
 }
 
-var updatePlayer = function(ID, element, new_value){
-	queryThis('UPDATE ' + table + ' SET ' + element + ' = ' + new_value + ' WHERE ID = "' + ID + '"')
+var updatePlayer = function(name, ID, rocks, apples){
+	queryThis('INSERT INTO ' + table + 'VALUES("' + name + '", "' + ID + '", "' + rocks + '", ' + apples + ', ' + getTimestamp() + '")')
 }
+
+// var updatePlayer = function(ID, element, new_value){
+// 	queryThis('UPDATE ' + table + ' SET ' + element + ' = ' + new_value + ' WHERE ID = "' + ID + '"')
+// }
 
 module.exports = {
 	updatePlayer	: updatePlayer,
