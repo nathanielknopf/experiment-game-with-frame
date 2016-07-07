@@ -43,12 +43,7 @@ var queryThis = function(to_query){
 }
 
 var createTable = function(name){
-	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '(
-		name VARCHAR(30),
-		ID VARCHAR(30),
-		rocks VARCHAR(10),
-		apples INT,
-		access TIMESTAMP)'
+	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '( name VARCHAR(30), ID VARCHAR(30), rocks VARCHAR(10), apples INT, access TIMESTAMP)'
 	queryThis(new_table_query)
 }
 

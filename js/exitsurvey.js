@@ -26,7 +26,7 @@ function make_slides(f){
 			if(response_one.length == 0){
 				$(".err.show").show()
 			}else{
-				exp.response = response
+				exp.response = response_one
 				exp.go()
 			}
 		}
@@ -36,7 +36,7 @@ function make_slides(f){
 		name: "thanks",
 		start:function(){
 			console.log("End of survey reached.")
-			console.log(exp.responses)
+			console.log(exp.response)
 			exp.data= {
          		"system" : exp.system,
          		"condition" : exp.condition,
@@ -53,8 +53,7 @@ function make_slides(f){
 function init(){
     exp.user = getParam('user')
     exp.condition = getParam('condition')
-	// exp.condition = _.sample(["a", "b"])
-	exp.responses = {}
+	exp.response = ''
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,
