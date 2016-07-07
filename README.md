@@ -6,7 +6,7 @@ This is an online experiment built meant for use on Amazon's MTurk platform for 
 
 The server is built with Express and Socket.io, packages for Node.js. Several other node packages, including Phaser (the framework in which the game is built), mysql, and moment, are required to run the experiment.
 
-##Setting up and running the experiment
+##Setting up and Running the Experiment
 
 Clone this repo, `cd` into the directory, and run `npm install` to install the dependencies locally. 
 
