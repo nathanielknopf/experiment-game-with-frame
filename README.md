@@ -8,14 +8,14 @@ The server is built with Express and Socket.io, packages for Node.js. Several ot
 
 ##Setting up and running the experiment
 
-Clone this repo, 'cd' into the directory, and run 'npm install' to install the dependencies locally. 
+Clone this repo, `cd` into the directory, and run `npm install` to install the dependencies locally. 
 
 Various parameters for the server and for the experiment can be configured with the configs object in the the config.js file. 
 
 To run the server:
-'''
+```
 node server.js
-'''
+```
 
 ##Help
 
