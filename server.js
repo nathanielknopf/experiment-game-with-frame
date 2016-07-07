@@ -8,7 +8,7 @@ vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
 var app = express()
 var server = http.createServer(app)
 var io = require('socket.io').listen(server)
-var database = require(__dirname + '/database')
+var database = require(__dirname + '/js/database')
 
 var time_to_play = configs.play_time
 var port = configs.port

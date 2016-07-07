@@ -1,3 +1,5 @@
+var getParams = require(__dirname + '/js/getParams')
+
 function make_slides(f){
 	var slides = {}
 
@@ -34,7 +36,8 @@ function make_slides(f){
 }
 
 function init(){
-    exp.user = null
+    exp.user = getParams.getParams('user')
+    exp.condition = getParams.getParams('condition')
 	// exp.condition = _.sample(["a", "b"])
 	exp.responses = {}
 	exp.system = {
