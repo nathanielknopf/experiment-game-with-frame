@@ -72,7 +72,7 @@ io.on('connection', function(socket){
 	timer(time_to_play)
 
 	socket.on('apples', function(apples){
-		invetory.points += 1
+		inventory.points += 1
 		if(use_db){
 			database.updatePlayer(user, socket_id, inventory.pocket, inventory.points)
 		// 	database.updatePlayer(socket_id, 'apples', apples)
