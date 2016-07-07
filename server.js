@@ -76,7 +76,7 @@ io.on('connection', function(socket){
 		if(use_db){
 			database.updatePlayer(user, socket_id, inventory.pocket, inventory.points)
 		// 	database.updatePlayer(socket_id, 'apples', apples)
-		// }
+		}
 	})
 
 	socket.on('rocks', function(rock){
