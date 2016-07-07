@@ -23,12 +23,10 @@ function make_slides(f){
 		},
 		button: function(){
 			response_one = $("#response_one").val()
-			response_two = $("#response_two").val()
-			if(response_one.length == 0 || response_two.length == 0){
+			if(response_one.length == 0){
 				$(".err.show").show()
 			}else{
-				exp.responses.small = response_one
-				exp.responses.big = response_two
+				exp.response = response
 				exp.go()
 			}
 		}
@@ -39,6 +37,13 @@ function make_slides(f){
 		start:function(){
 			console.log("End of survey reached.")
 			console.log(exp.responses)
+			exp.data= {
+         		"system" : exp.system,
+         		"condition" : exp.condition,
+         		"response" : exp.response
+          		"time_in_minutes" : 2 //configure this somehow
+    		};
+			setTimeout(function() {turk.submit(exp.data);}, 1000);
 		}
 	})
 
