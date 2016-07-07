@@ -6,6 +6,8 @@ function make_slides(f){
 		start: function(){
 			exp.startT = Date.now()
 			$(".err").hide()
+			$(".prompt_one").html("Please describe small rocks.")
+			$(".prompt_two").html("Please describe large rocks.")
 		},
 		button: function(){
 			response_one = $("#response_one").val()
@@ -13,11 +15,8 @@ function make_slides(f){
 			if(response_one.length == 0 || response_two.length == 0){
 				$(".err.show").show()
 			}else{
-				exp.responses.$("#prompt_one").html() = response_one
-				exp.responses.$("#prompt_two").html() = response_two
-				exp.responses.prompt_one = response_one
-				exp.responses.prompt_two = response_two
-
+				exp.responses.small = response_one
+				exp.responses.big = response_two
 				exp.go()
 			}
 		}
