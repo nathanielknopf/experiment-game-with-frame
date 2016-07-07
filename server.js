@@ -58,7 +58,7 @@ io.on('connection', function(socket){
 				timer(seconds - 1)
 			} else {
 				var destination = exit_survey_url + '?user=' + user + '&condition=' + condition
-				socket.emit('redirect', exit_survey_url)
+				socket.emit('redirect', destination)
 				console.log("Redirecting " + user + ".")
 			}
 		}, 1000)
