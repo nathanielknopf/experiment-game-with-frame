@@ -13,8 +13,8 @@ function make_slides(f){
 			if(response_one.length == 0 || response_two.length == 0){
 				$(".err.show").show()
 			}else{
-				prompt_one = $("#prompt_one").html()
-				prompt_two = $("#prompt_two").html()
+				exp.responses.$("#prompt_one").html() = response_one
+				exp.responses.$("#prompt_two").html() = response_two
 				exp.responses.prompt_one = response_one
 				exp.responses.prompt_two = response_two
 
