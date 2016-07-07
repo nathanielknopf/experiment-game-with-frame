@@ -6,7 +6,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
     <script src="config.js"></script>
-    <script src="js/getParams.js"></script>
     <style type="text/css">
         body {
             margin: 0
@@ -21,6 +20,19 @@
 <script type="text/javascript">
 
 var socket = io()
+
+var getParam = function(param){
+    var pageURL = decodeURIComponent(window.location.search.substring(1)),
+        URLVariables = pageURL.split('&'),
+        param_name
+
+    for (var i = 0; i < URLVariables.length; i++){
+        param_name = URLVariables[i].split('=')
+        if(param_name[0] == param){
+            return param_name[1] === undefined ? true : param_name[1]
+        }
+    }
+}
 
 var condition = getParam('condition') //'a' for correlation between rock size and causal weight, 'b' for none
 console.log('Condition: ' + condition)
