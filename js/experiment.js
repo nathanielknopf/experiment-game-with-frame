@@ -15,38 +15,61 @@ function make_slides(f){
 		}
 	})
 
-	slides.username = slide({
-		name: "username",
+	slides.login = slide({
+		name: "login",
 		start: function(){
 			$(".err").hide()
-			$(".display_prompt").html("Please enter your username here.")
+			$(".display_prompt").html("Please enter your username, then click the continue button to be redirected to the game.")
 		},
 		button: function(){
-      		response = $("#text_response").val();
-      		if (response.length == 0){
-      			$(".err").show()
-      		}else{
-      			exp.user = response
-      			exp.go()
-      		}
-		}
-	})
-
-	slides.gotogame = slide({
-		name: "gotogame",
-		start: function(){
-			console.log("Press the button to be redirected to the game...")
-		},
-		button: function(){
-			var destination = "http://cocolabpi.com/game.html?user=" + exp.user
-			var proceed = window.confirm("Are you ready to be redirected to the game?")
-			if (proceed){
-				setTimeout(function(){
-					window.location = destination
-				}, 1000)
+			response = $("#text_response").val()
+			if (response.length == 0){
+				$(".err").show()
+			}else{
+				exp.user = response
+				var destination = "http://cocolbapi.com/game.html?user=" + exp.user
+				var proceed = window.confirm("Are you ready to be redirected to the game?")
+				if (proceed){
+					setTimeout(function(){
+						window.location = destination
+					}, 1000)
+				}
 			}
 		}
 	})
+
+	// slides.username = slide({
+	// 	name: "username",
+	// 	start: function(){
+	// 		$(".err").hide()
+	// 		$(".display_prompt").html("Please enter your username here.")
+	// 	},
+	// 	button: function(){
+ //      		response = $("#text_response").val();
+ //      		if (response.length == 0){
+ //      			$(".err").show()
+ //      		}else{
+ //      			exp.user = response
+ //      			exp.go()
+ //      		}
+	// 	}
+	// })
+
+	// slides.gotogame = slide({
+	// 	name: "gotogame",
+	// 	start: function(){
+	// 		console.log("Press the button to be redirected to the game...")
+	// 	},
+	// 	button: function(){
+	// 		var destination = "http://cocolabpi.com/game.html?user=" + exp.user
+	// 		var proceed = window.confirm("Are you ready to be redirected to the game?")
+	// 		if (proceed){
+	// 			setTimeout(function(){
+	// 				window.location = destination
+	// 			}, 1000)
+	// 		}
+	// 	}
+	// })
 
 	// slides.game = slide({
 	// 	name: "game",
@@ -58,13 +81,13 @@ function make_slides(f){
 	// 	}
 	// })
 
-	slides.thanks = slide({
-		name: "thanks",
-		start: function(){
-			console.log("End.")
-			console.log(exp.user + " has completed the survey.")
-		}
-	})
+	// slides.thanks = slide({
+	// 	name: "thanks",
+	// 	start: function(){
+	// 		console.log("End.")
+	// 		console.log(exp.user + " has completed the survey.")
+	// 	}
+	// })
 
 	return slides
 }
@@ -80,7 +103,7 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     }
-    exp.structure = ["i0", "instructions", "username", "gotogame", "thanks"]
+    exp.structure = ["i0", "instructions", "login"]
 
 	exp.slides = make_slides(exp);
 
