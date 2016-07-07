@@ -10,7 +10,10 @@ The server is built with Express and Socket.io, packages for Node.js. Several ot
 
 Clone this repo, `cd` into the directory, and run `npm install` to install the dependencies locally. 
 
-Various parameters for the server and for the experiment can be configured with the configs object in the the config.js file. 
+Various parameters for the server and for the experiment can be configured with the configs object in the the config.js file.
+
+By default, the server uses port 8080 and does not log in a mysql database.
+By default, the game runs for 1 minute with a 50% chance of either condition a or condition b, with small and large rocks spawning with equal likelihood.
 
 To run the server:
 

@@ -8,7 +8,6 @@ vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
 var app = express()
 var server = http.createServer(app)
 var io = require('socket.io').listen(server)
-var database = require(__dirname + '/js/database')
 
 var time_to_play = configs.play_time
 var port = configs.port
@@ -17,6 +16,7 @@ var exit_survey_url = configs.exit_survey_url
 
 if(use_db){
 	var mysql = require('mysql')
+	var database = require(__dirname + '/js/database')
 	var connection = mysql.createConnection({
 		host		: 'localhost',
 		user		: 'root',
