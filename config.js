@@ -1,7 +1,7 @@
 var configs = {
 	"play_time": 15,
 	"exit_survey_url": 'http://cocolabpi.com/exitsurvey.html',
-	"use_db": false,
+	"use_db": true,
 	"port": 8080,
 	"big_rocks_scale": 1.2,
 	"big_rocks_prob_a": 0.9,
