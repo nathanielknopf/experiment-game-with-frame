@@ -42,17 +42,6 @@ var queryThis = function(to_query){
 	})
 }
 
-var checkForTable = function(name){
-	pool.getConnection(function(err, connection){
-		if (err) {
-			console.log("ERROR CONNECTING: " + err)
-			return
-		}
-
-		connection.query("SHOW TABLES LIKE ")
-	})
-}
-
 var createTable = function(name){
 	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '(
 		name VARCHAR(30),
