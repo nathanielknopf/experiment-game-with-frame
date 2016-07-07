@@ -6,6 +6,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
     <script src="config.js"></script>
+    <script src="getParams.js"></script>
     <style type="text/css">
         body {
             margin: 0
@@ -21,11 +22,23 @@
 
 var socket = io()
 
-// var hs = socket.handshake
-// var query = require('url').parse(socket.handshake.headers.referer, true).query
-// var user = (query.user) ? query.user : 'Undefined'
+var getParam = function(param){
+    var pageURL = decodeURIComponent(window.location.search.substring(1)),
+        URLVariables = pageURL.split('&'),
+        param_name
 
-var game_mode = 'a' //'a' for correlation between rock size and causality, 'b' for no correlation
+    for (var i = 0; i < URLVariables.length; i++){
+        param_name = URLVariables.split[i].split('=')
+        if(param_name[0] == param){
+            return param_name[1] === undefined ? true : param_name[1]
+        }
+    }
+}
+
+var condition = getParam('condition') //'a' for correlation between rock size and causal weight, 'b' for none
+console.log('Condition: ' + condition)
+var game_mode = 'a' //temp
+//var game_mode = condition
 
 socket.on('redirect', function(destination){
     window.location = destination

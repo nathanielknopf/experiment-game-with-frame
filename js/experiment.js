@@ -27,7 +27,7 @@ function make_slides(f){
 				$(".err").show()
 			}else{
 				exp.user = response
-				var destination = "http://cocolabpi.com/game.html?user=" + exp.user
+				var destination = "http://cocolabpi.com/game.html?user=" + exp.user + '&condition=' + exp.condition
 				var proceed = window.confirm("Are you ready to be redirected to the game?")
 				if (proceed){
 					setTimeout(function(){

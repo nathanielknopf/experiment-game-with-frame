@@ -42,6 +42,7 @@ io.on('connection', function(socket){
 	
 	var hs = socket.handshake
 	var query = require('url').parse(socket.handshake.headers.referer, true).query
+	var condition = (query.condition) ? query.condition : 'a'
 	var user = (query.user) ? query.user : 'Undefined'
 
 	console.log("Connection from user: " + user + ".")
@@ -56,6 +57,7 @@ io.on('connection', function(socket){
 				socket.emit('timer', seconds - 1)
 				timer(seconds - 1)
 			} else {
+				var destination = exit_survey_url + '?user=' + user + '&condition=' + condition
 				socket.emit('redirect', exit_survey_url)
 				console.log("Redirecting " + user + ".")
 			}
