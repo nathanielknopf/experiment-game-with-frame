@@ -1,16 +1,23 @@
 var express = require('express')
 var http = require('http')
+var fs = require('fs')
+var vm = require('vm')
+
+vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
 
 var app = express()
 var server = http.createServer(app)
 var io = require('socket.io').listen(server)
 var database = require(__dirname + '/database')
 
-var time_to_play = (process.argv[2] == null) ? 30 : process.argv[2]
-var port = (process.argv[3] == null) ? 8080 : process.argv[3]
-var use_db = (process.argv[4] == 'true') ? true : false
-
-var time_to_play = 30
+//var time_to_play = (process.argv[2] == null) ? 30 : process.argv[2]
+var time_to_play = configs.play_time
+//var port = (process.argv[3] == null) ? 8080 : process.argv[3]
+var port = configs.server_port
+//var use_db = (process.argv[4] == 'true') ? true : false
+var use_db = configs.use_db
+//var exit_survey_url = 'http://google.com/'
+var exit_survey_url = configs.exit_survey_url
 
 if(use_db){
 	var mysql = require('mysql')
@@ -53,7 +60,7 @@ io.on('connection', function(socket){
 				socket.emit('timer', seconds - 1)
 				timer(seconds - 1)
 			} else {
-				socket.emit('redirect', 'http://localhost:8000/chatroom.html?role=teacher')
+				socket.emit('redirect', exit_survey_url)
 				console.log("Redirecting " + user + ".")
 			}
 		}, 1000)
