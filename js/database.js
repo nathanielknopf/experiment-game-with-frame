@@ -10,7 +10,7 @@ var pool = mysql.createPool({
 	debut			: false
 })
 
-var table = 'players'
+var table = 'players' //this will go away soon
 
 var getTimestamp = function(){
 	var date = moment().format().slice(0, 10)
@@ -42,17 +42,35 @@ var queryThis = function(to_query){
 	})
 }
 
+var checkForTable = function(name){
+	pool.getConnection(function(err, connection){
+		if (err) {
+			console.log("ERROR CONNECTING: " + err)
+			return
+		}
+
+		connection.query("SHOW TABLES LIKE ")
+	})
+}
+
+var createTable = function(name){
+	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '(
+		name VARCHAR(30),
+		ID VARCHAR(30),
+		rocks VARCHAR(10),
+		apples INT,
+		access TIMESTAMP)'
+	queryThis(new_table_query)
+}
+
 var addPlayer = function(name, ID){
-	queryThis('INSERT INTO ' + table + ' VALUES("' + name + '", "' + ID + '", "empty", 0, "' + getTimestamp() + '")')
+	createTable(name) //make new table if it doesn't exist already
+	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "empty", 0, "' + getTimestamp() + '")')
 }
 
 var updatePlayer = function(name, ID, rocks, apples){
-	queryThis('INSERT INTO ' + table + ' VALUES("' + name + '", "' + ID + '", "' + rocks + '", ' + apples + ', "' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + rocks + '", ' + apples + ', "' + getTimestamp() + '")')
 }
-
-// var updatePlayer = function(ID, element, new_value){
-// 	queryThis('UPDATE ' + table + ' SET ' + element + ' = ' + new_value + ' WHERE ID = "' + ID + '"')
-// }
 
 module.exports = {
 	updatePlayer	: updatePlayer,
