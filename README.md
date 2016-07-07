@@ -13,9 +13,18 @@ Clone this repo, `cd` into the directory, and run `npm install` to install the d
 Various parameters for the server and for the experiment can be configured with the configs object in the the config.js file. 
 
 To run the server:
+
 ```
 node server.js
 ```
+
+or with nohup:
+
+```
+nohup node server.js &
+```
+
+To access the experiment from the server machine, point your browser to `localhost:<port>/experiment.html`
 
 ##Help
 
