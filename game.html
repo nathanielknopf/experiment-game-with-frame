@@ -19,9 +19,13 @@
 
 <script type="text/javascript">
 
-var game_mode = 'a' //'a' for correlation between rock size and causality, 'b' for no correlation
-
 var socket = io()
+
+var hs = socket.handshake
+var query = require('url').parse(socket.handshake.headers.referer, true).query
+var user = (query.user) ? query.user : 'Undefined'
+
+var game_mode = 'a' //'a' for correlation between rock size and causality, 'b' for no correlation
 
 socket.on('redirect', function(destination){
     window.location = destination

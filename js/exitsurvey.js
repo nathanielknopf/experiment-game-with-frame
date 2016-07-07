@@ -1,40 +1,33 @@
 function make_slides(f){
 	var slides = {}
-	
-	slides.i0 = slide({
-		name: "i0",
-		start: function(){
-			exp.startT = Date.now();
-		}
-	})
 
-	slides.instructions = slide({
-		name: "instructions",
-		button: function(){
-			exp.go()
-		}
-	})
-
-	slides.login = slide({
-		name: "login",
+	slides.response = slide({
+		name: "response",
 		start: function(){
+			exp.startT = Date.now()
 			$(".err").hide()
-			$(".display_prompt").html("Please enter your username, then click the continue button to be redirected to the game.")
 		},
 		button: function(){
-			response = $("#text_response").val()
-			if (response.length == 0){
-				$(".err").show()
+			response_one = $("#response_one").val()
+			response_two = $("#response_two").val()
+			if(response_one.length == 0 || response_two.length == 0){
+				$(".err.show").show()
 			}else{
-				exp.user = response
-				var destination = "http://cocolabpi.com/game.html?user=" + exp.user
-				var proceed = window.confirm("Are you ready to be redirected to the game?")
-				if (proceed){
-					setTimeout(function(){
-						window.location = destination
-					}, 1000)
-				}
+				prompt_one = $("#prompt_one").html()
+				prompt_two = $("#prompt_two").html()
+				exp.responses.prompt_one = response_one
+				exp.responses.prompt_two = response_two
+
+				exp.go()
 			}
+		}
+	})
+
+	slides.thanks = slide({
+		name: "thanks",
+		start:function(){
+			console.log("End of survey reached.")
+			console.log(exp.responses)
 		}
 	})
 
@@ -42,8 +35,9 @@ function make_slides(f){
 }
 
 function init(){
-    exp.user = null //set this up in a bit
-	exp.condition = _.sample(["a", "b"])
+    exp.user = null
+	// exp.condition = _.sample(["a", "b"])
+	exp.responses = {}
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,
@@ -52,7 +46,7 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     }
-    exp.structure = ["i0", "instructions", "login"]
+    exp.structure = ["response", "thanks"]
 
 	exp.slides = make_slides(exp);
 
