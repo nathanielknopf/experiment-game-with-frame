@@ -47,7 +47,7 @@ var addPlayer = function(name, ID){
 }
 
 var updatePlayer = function(name, ID, rocks, apples){
-	queryThis('INSERT INTO ' + table + 'VALUES("' + name + '", "' + ID + '", "' + rocks + '", ' + apples + ', "' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + table + ' VALUES("' + name + '", "' + ID + '", "' + rocks + '", ' + apples + ', "' + getTimestamp() + '")')
 }
 
 // var updatePlayer = function(ID, element, new_value){
