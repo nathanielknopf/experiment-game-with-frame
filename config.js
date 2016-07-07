@@ -1,5 +1,5 @@
 var configs = {
-	"play_time": 15,
+	"play_time": 60,
 	"exit_survey_url": 'http://cocolabpi.com/exitsurvey.html',
 	"use_db": true,
 	"port": 8080,

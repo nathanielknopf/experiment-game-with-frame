@@ -19,8 +19,7 @@ function make_slides(f){
 		start: function(){
 			exp.startT = Date.now()
 			$(".err").hide()
-			$(".prompt_one").html("Please describe small rocks.")
-			$(".prompt_two").html("Please describe large rocks.")
+			$(".prompt_one").html("You've just explored this world. Now, tell the next Turker things about this world that you think would help them.")
 		},
 		button: function(){
 			response_one = $("#response_one").val()
