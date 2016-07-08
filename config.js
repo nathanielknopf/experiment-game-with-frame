@@ -1,6 +1,6 @@
 var configs = {
 	"play_time": 60,
-	"use_db": true,
+	"use_db": false,
 	"port": 8080,
 	"big_rocks_scale": 1.2,
 	"big_rocks_prob_a": 0.9,
