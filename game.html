@@ -39,7 +39,7 @@ console.log('Condition: ' + condition)
 var game_mode = condition
 
 socket.on('redirect', function(destination){
-    window.location.pathname = destination
+    window.location.href = destination
 })
 
 socket.on('timer', function(seconds){

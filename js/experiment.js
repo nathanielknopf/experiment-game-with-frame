@@ -44,7 +44,7 @@ function make_slides(f){
 				var proceed = window.confirm("Are you ready to be redirected to the game?")
 				if (proceed){
 					setTimeout(function(){
-						window.location.pathname = destination
+						window.location.href = destination
 					}, 1000)
 				}
 			}
