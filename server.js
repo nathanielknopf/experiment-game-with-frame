@@ -11,6 +11,7 @@ var io = require('socket.io').listen(server)
 
 var time_to_play = configs.play_time
 var port = configs.port
+
 var use_db = configs.use_db
 var exit_survey_url = configs.exit_survey_url
 
