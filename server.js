@@ -1,27 +1,28 @@
-var http = require('http')
-//var https = require('https')
 var express = require('express')
+var app = express()
 var fs = require('fs')
 var vm = require('vm')
 
 vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
-
-var app = express()
-var io = require('socket.io').listen(server)
-
-var privateKey = fs.readFileSync('sslcert/server.key')
-var certificate = fs.readFileSync('sslcert/server.crt')
-
-var credentials = {key: privateKey, cert: certificate}
-
-//var server = https.createServer(credentials, app)
-var server = http.createServer(app)
-
-var time_to_play = configs.play_time
-var port = configs.port
-
 var use_db = configs.use_db
+var time_to_play = configs.play_time
 var exit_survey_url = configs.exit_survey_url
+
+try {
+	var https = require('https')
+	var port = configs.https_port
+	var privateKey = fs.readFileSync('sslcert/server.key')
+	var certificate = fs.readFileSync('sslcert/server.crt')
+	var credentials = {key: privateKey, cert: certificate}
+	var server = https.createServer(credentials, app)
+	var io = require('socket.io').listen(server)
+} catch(err){
+	console.log("HTTPS failed to launch -- falling back to HTTP")
+	var http = require('http')
+	var port = configs.http_port
+	var server = http.createServer(app)
+	var io = require('socket.io').listen(server)
+}
 
 if(use_db){
 	var mysql = require('mysql')
