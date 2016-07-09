@@ -1,5 +1,4 @@
 var http = require('http')
-//var https = require('https')
 var express = require('express')
 var fs = require('fs')
 var vm = require('vm')
@@ -9,12 +8,6 @@ vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
 var app = express()
 var io = require('socket.io').listen(server)
 
-var privateKey = fs.readFileSync('sslcert/server.key')
-var certificate = fs.readFileSync('sslcert/server.crt')
-
-var credentials = {key: privateKey, cert: certificate}
-
-//var server = https.createServer(credentials, app)
 var server = http.createServer(app)
 
 var time_to_play = configs.play_time
