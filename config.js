@@ -3,6 +3,8 @@ var configs = {
 	"use_db": false,
 	"http_port": 8080,
 	"https_port": 4343,
+	"private_key": "sslcert/server.key",
+	"certificate": "sslcert/server.crt",
 	"big_rocks_scale": 1.2,
 	"big_rocks_prob_a": 0.9,
 	"big_rocks_prob_b": 0.5,

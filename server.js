@@ -11,8 +11,8 @@ var exit_survey_url = configs.exit_survey_url
 try {
 	var https = require('https')
 	var port = configs.https_port
-	var privateKey = fs.readFileSync('sslcert/server.key')
-	var certificate = fs.readFileSync('sslcert/server.crt')
+	var privateKey = fs.readFileSync(configs.private_key)
+	var certificate = fs.readFileSync(configs.certificate)
 	var credentials = {key: privateKey, cert: certificate}
 	var server = https.createServer(credentials, app)
 	var io = require('socket.io').listen(server)
