@@ -1,4 +1,4 @@
-var getParam = function(param, use_referrer){
+var param = function(param, use_referrer){
 	if(use_referrer){
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
    		var regexS = "[\\?&]"+name+"=([^&#]*)";
@@ -49,7 +49,7 @@ function make_slides(f){
 				$(".err").show()
 			}else{
 				exp.user = response
-				var destination = "/game.html?user=" + exp.user + '&condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitId=' exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo
+				var destination = '/game.html?user=' + exp.user + '&condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitId=' exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo
 				var proceed = window.confirm("Are you ready to be redirected to the game?")
 				if (proceed){
 					setTimeout(function(){
@@ -78,7 +78,7 @@ function init(){
     exp.hitId = param("hitId", true)
     exp.workerId = param("workerId", true)
     exp.turkSubmitTo = param("turkSubmitTo")
-
+	console.log("assignmentId: " + exp.assignmentId + " - hitId: " + exp.hitId + " - workerId: " + exp.workerId + " - turkSubmitTo: " + exp.turkSubmitTo)
 	exp.slides = make_slides(exp);
 
 	exp.nQs = utils.get_exp_length(); //this does not work if there are stacks of stims (but does work for an experiment with this structure)
