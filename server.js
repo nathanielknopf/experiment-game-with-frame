@@ -63,7 +63,7 @@ io.on('connection', function(socket){
 	console.log("Connection from user: " + user + ".")
 
 	if(use_db){
-		database.addPlayer(user, socket_id)
+		database.addPlayer(user, condition, socket_id)
 	}
 
 	var timer = function(seconds){
@@ -85,7 +85,7 @@ io.on('connection', function(socket){
 	socket.on('apples', function(apples){
 		inventory.points += 1
 		if(use_db){
-			database.updatePlayer(user, socket_id, inventory.pocket, inventory.points)
+			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.points)
 		// 	database.updatePlayer(socket_id, 'apples', apples)
 		}
 	})
@@ -93,7 +93,7 @@ io.on('connection', function(socket){
 	socket.on('rocks', function(rock){
 		inventory.pocket = rock
 		if(use_db){
-			database.updatePlayer(user, socket_id, inventory.pocket, inventory.points)
+			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.points)
 			// database.updatePlayer(socket_id, 'rocks', rock)
 		}
 	})
