@@ -46,6 +46,9 @@ turk = turk || {};
     var regexS = "[\\?&]"+name+"=([^&#]*)";
     var regex = new RegExp( regexS );
     var results = regex.exec( url );
+    if(results==null) {
+      console.log(name + " failed to query from url " + url)
+    }
     return ( results == null ) ? "" : results[1];
   }
   
@@ -121,17 +124,7 @@ turk = turk || {};
       div.style.cssFloat = "right";
       div.style.padding = "1em";
       div.style.backgroundColor = "#dfdfdf";
-      var error = ""
-      if(!assignmentID && !turkSubmitTo){
-        error = "assignmentID and turkSubmitTo"
-      } else if(!assigmentID){
-        error = "assignmentID"
-      } else if(!turkSubmitTo){
-        error = "turkSubmitTo"
-      }else{
-        error = "something else"
-      }
-      div.innerHTML = "<p><b>Debug mode " + error + "</b></p>Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
+      div.innerHTML = "<p><b>Debug mode</b></p>Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
       document.body.appendChild(div);
       return;
     }
