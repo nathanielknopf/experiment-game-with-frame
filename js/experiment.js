@@ -1,24 +1,17 @@
 var param = function(param, use_referrer){
+	var params
 	if(use_referrer){
-		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-   		var regexS = "[\\?&]"+name+"=([^&#]*)";
-    	var regex = new RegExp( regexS );
-    	var url = document.referrer;
-    	var results = regex.exec( url );
-    	return ( results == null ) ? "" : results[1];
+		params = document.referrer.split('?')[1].split('&')
 	}else{
-	    var pageURL = decodeURIComponent(window.location.search.substring(1)),
-	        URLVariables = pageURL.split('&'),
-	        param_name;
-
-	    for (var i = 0; i < URLVariables.length; i++){
-	        param_name = URLVariables[i].split('=');
-	        if(param_name[0] == param){
-	            return param_name[1] === undefined ? true : param_name[1];
-	        };
-	    };
-	};
-};
+		params = window.location.split('?')[1].split('&')
+	}
+	for (var i = 0; i < params.length; i++){
+		this_param = params[i].split('=')
+		if(param == this_param[0]){
+			return (this_param[1] === undefined) ? true : this_param[1]
+		}
+	}
+}
 
 function make_slides(f){
 	var slides = {};
