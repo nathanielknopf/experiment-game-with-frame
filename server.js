@@ -81,7 +81,8 @@ io.on('connection', function(socket){
 				socket.emit('timer', seconds - 1)
 				timer(seconds - 1)
 			} else {
-				var destination = '/exitsurvey.html?user=' + user + '&condition=' + condition
+				// var destination = '/exitsurvey.html?user=' + user + '&condition=' + condition
+				var destination = '/exitsurvey.html'
 				socket.emit('redirect', destination)
 				console.log("Redirecting " + user + ".")
 			}
