@@ -1,5 +1,7 @@
 function param( param, use_referrer ) { 
-    var regexS = "[\?&]"+param+"=([^&#]*)"; 
+	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+param+"=([^&#]*)";
+   // var regexS = "[\?&]"+param+"=([^&#]*)"; 
     var regex = new RegExp( regexS ); 
     var tmpURL = use_referrer ? document.referrer : window.location.href
     var results = regex.exec( tmpURL ); 
