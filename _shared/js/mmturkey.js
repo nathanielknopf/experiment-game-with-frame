@@ -46,9 +46,6 @@ turk = turk || {};
     var regexS = "[\\?&]"+name+"=([^&#]*)";
     var regex = new RegExp( regexS );
     var results = regex.exec( url );
-    if(results==null) {
-      console.log(name + " failed to query from url " + url)
-    }
     return ( results == null ) ? "" : results[1];
   }
   

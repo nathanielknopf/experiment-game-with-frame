@@ -1,13 +1,18 @@
 var param = function(param, use_referrer){
 	var params
+	var url
 	if(use_referrer){
-		params = document.referrer.split('?')[1].split('&')
+		url = document.referrer
+		params = url.split('?')[1].split('&')
+		console.log(url + ":" + params)
 	}else{
-		params = window.location.split('?')[1].split('&')
+		url = window.location.href
+		params = url.split('?')[1].split('&')
 	}
 	for (var i = 0; i < params.length; i++){
 		this_param = params[i].split('=')
 		if(param == this_param[0]){
+			console.log("param: " + param + ", url: " + url)
 			return (this_param[1] === undefined) ? true : this_param[1]
 		}
 	}
