@@ -1,7 +1,6 @@
 function param( param, use_referrer ) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-    var regexS = "[\\?&]"+param+"=([^&#]*)";
-   // var regexS = "[\?&]"+param+"=([^&#]*)"; 
+    var regexS = "[\\?&]"+param+"=([^&#]*)"; 
     var regex = new RegExp( regexS ); 
     var tmpURL = use_referrer ? document.referrer : window.location.href
     var results = regex.exec( tmpURL ); 
@@ -12,26 +11,6 @@ function param( param, use_referrer ) {
         return results[1];    
     } 
 }
-
-// var param = function(param, use_referrer){
-// 	var params
-// 	var url
-// 	if(use_referrer){
-// 		url = document.referrer
-// 		params = url.split('?')[1].split('&')
-// 		console.log(url + ":" + params)
-// 	}else{
-// 		url = window.location.href
-// 		params = url.split('?')[1].split('&')
-// 	}
-// 	for (var i = 0; i < params.length; i++){
-// 		this_param = params[i].split('=')
-// 		if(param == this_param[0]){
-// 			console.log("param: " + param + ", url: " + url)
-// 			return (this_param[1] === undefined) ? true : this_param[1]
-// 		}
-// 	}
-// }
 
 function make_slides(f){
 	var slides = {};
