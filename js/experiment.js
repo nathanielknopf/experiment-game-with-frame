@@ -66,10 +66,10 @@ function init(){
 		screenUW: exp.width
     };
     exp.structure = ["i0", "instructions", "login"];
-    exp.assignmentId = param("assignmentId", true);
-    exp.hitId = param("hitId", true);
-    exp.workerId = param("workerId", true);
-    exp.turkSubmitTo = param("turkSubmitTo");
+    exp.assignmentId = param("assignmentId", false);
+    exp.hitId = param("hitId", false);
+    exp.workerId = param("workerId", false);
+    exp.turkSubmitTo = param("turkSubmitTo", false);
 	console.log("assignmentId: " + exp.assignmentId + " - hitId: " + exp.hitId + " - workerId: " + exp.workerId + " - turkSubmitTo: " + exp.turkSubmitTo);
 	exp.slides = make_slides(exp);
 

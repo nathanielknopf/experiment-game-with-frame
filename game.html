@@ -52,7 +52,7 @@ socket.on('redirect', function(extension){
     var hitId = param("hitId", false)
     var workerId = param("workerId", false)
     var turkSubmitTo = param("turkSubmitTo")
-    var destination = extension + "?user=" + user + '&condition=' + condition + '&assignmentId=' + assignmentId + '&hitId=' hitId + '&workerId=' + workerId + '&turkSubmitTo=' + turkSubmitTo
+    var destination = extension + "?user=" + user + '&condition=' + condition + '&assignmentId=' + assignmentId + '&hitId=' + hitId + '&workerId=' + workerId + '&turkSubmitTo=' + turkSubmitTo
     window.location.href = destination
 })
 
