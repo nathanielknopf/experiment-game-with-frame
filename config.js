@@ -1,6 +1,6 @@
 var configs = {
 	"play_time": 60,
-	"use_db": false,
+	"use_db": true,
 	"http_port": 8080,
 	"https_port": 4343,
 	"private_key": "sslcert/server.key",

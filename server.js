@@ -16,6 +16,15 @@ try {
 	var credentials = {key: privateKey, cert: certificate}
 	var server = https.createServer(credentials, app)
 	var io = require('socket.io').listen(server)
+//	var app_http = express()
+//	var http_port = configs.http_port
+//	app_http.use(function(req, res){
+//		res.sendFile(__dirname + '/moved.html')
+//	})
+//	var http_server = http.createServer(app_http)
+//	http_server.listen(http_port, function(){
+//		console.log("Pointer server at port " + http_port + ".")
+//	})
 } catch(err){
 	console.log("HTTPS failed to launch -- falling back to HTTP")
 	var http = require('http')
