@@ -121,7 +121,15 @@ turk = turk || {};
       div.style.cssFloat = "right";
       div.style.padding = "1em";
       div.style.backgroundColor = "#dfdfdf";
-      div.innerHTML = "<p><b>Debug mode</b></p>Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
+      if(!assignmentID && !turkSubmitTo){
+        div.innerHTML = "<p><b>Debug mode</b></p>(assignmentID and turkSubmitTo) Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"  
+      } else if(!assigmentID){
+        div.innerHTML = "<p><b>Debug mode</b></p>(assignmentID) Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
+      } else if(!turkSubmitTo){
+        div.innerHTML = "<p><b>Debug mode</b></p>(turkSubmitTo) Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
+      }else{
+        div.innerHTML = "<p><b>Debug mode</b></p>(something else...) Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
+      }
       document.body.appendChild(div);
       return;
     }
