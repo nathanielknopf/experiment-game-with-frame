@@ -49,7 +49,7 @@ function make_slides(f){
 				$(".err").show();
 			}else{
 				exp.user = response;
-				var destination = '/game.html?user=' + exp.user + '&condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitId=' exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
+				var destination = '/game.html?user=' + exp.user + '&condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitId=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
 				var proceed = window.confirm("Are you ready to be redirected to the game?");
 				if (proceed){
 					setTimeout(function(){
