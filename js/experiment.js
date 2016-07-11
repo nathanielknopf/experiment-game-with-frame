@@ -32,23 +32,15 @@ function make_slides(f){
 	slides.login = slide({
 		name: "login",
 		start: function(){
-			$(".err").hide()
-			$(".display_prompt").html("Please enter your username, then click the continue button to be redirected to the game.")
+			$(".redirecting").hide()
+			$(".display_prompt").html("Please click the button below to be redirected to the game.")
 		},
 		button: function(){
-			response = $("#text_response").val();
-			if (response.length == 0){
-				$(".err").show();
-			}else{
-				exp.user = response;
-				var destination = '/game.html?user=' + exp.user + '&condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitId=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
-				var proceed = window.confirm("Are you ready to be redirected to the game?");
-				if (proceed){
-					setTimeout(function(){
-						window.location.href = destination;
-					}, 1000)
-				};
-			};
+			var destination = '/game.html?condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitID=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
+			$(".redirecting").show()
+			setTimeout(function(){
+				window.location.href = destination;
+			}, 1000)
 		}
 	});
 
