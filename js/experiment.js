@@ -27,14 +27,14 @@ function make_slides(f){
 		name: "i0",
 		start: function(){
 			exp.startT = Date.now();
-		};
+		}
 	});
 
 	slides.instructions = slide({
 		name: "instructions",
 		button: function(){
 			exp.go()
-		};
+		}
 	});
 
 	slides.login = slide({
@@ -57,7 +57,7 @@ function make_slides(f){
 					}, 1000)
 				};
 			};
-		};
+		}
 	});
 
 	return slides;
