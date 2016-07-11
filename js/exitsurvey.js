@@ -32,6 +32,22 @@ function make_slides(f){
 		}
 	})
 
+	slides.subj_info = slide({
+		name: "subj_info",
+		submit: function(e){
+			exp.subj_data = {
+				language: $("#language").val(),
+				enjoyment: $("#enjoyment").val(),
+				assess: $('input[name="assess"]:checked').val(),
+				age: $("#age").val(),
+				gender: $("#gender").val(),
+				education: $("#education").val(),
+				comments: $("#comments").val(),
+			}
+			exp.go()
+		}
+	})
+
 	slides.thanks = slide({
 		name: "thanks",
 		start:function(){
@@ -41,7 +57,8 @@ function make_slides(f){
          		"system" : exp.system,
          		"condition" : exp.condition,
          		"response" : exp.response,
-          		"time_in_minutes" : 2 //configure this somehow
+         		"subject_information": exp.subj_data
+          		// "time_in_minutes" : configure this somehow
     		};
 			setTimeout(function() {turk.submit(exp.data);}, 1000);
 		}
@@ -62,12 +79,12 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     }
-    exp.structure = ["response", "thanks"]
+    exp.structure = ["response", "subj_info", "thanks"]
 
 	exp.slides = make_slides(exp);
 
-	exp.nQs = utils.get_exp_length(); //this does not work if there are stacks of stims (but does work for an experiment with this structure)
-                    //relies on structure and slides being defined
+	// exp.nQs = utils.get_exp_length(); //this does not work if there are stacks of stims (but does work for an experiment with this structure)
+ //                    //relies on structure and slides being defined
 
 	$('.slide').hide(); //hide everything
 
