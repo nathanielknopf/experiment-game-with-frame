@@ -66,7 +66,7 @@ function make_slides(f){
 				setTimeout(function(){
 					var destination = '/thanks.html?workerId=' + exp.user
 					window.location.href = destination
-				}, 1000)
+				}, 500)
 				window.location.href = destination;
 			}, 1000)
 		}

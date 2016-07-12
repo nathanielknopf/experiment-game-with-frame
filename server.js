@@ -43,7 +43,15 @@ app.get(/^(.+)$/, function(req, res){
      res.sendFile(__dirname + req.params[0])
  });
 
-io.on('connection', function(socket){
+var thanksnsp = io.of('/thanks-nsp')
+thanksnsp.on('connection', function(socket){
+	socket.on('finished', function(workerId){
+		console.log(workerId + ' has finished the experiment.')
+	})	
+})
+
+var gamensp = io.of('/game-nsp')
+gamensp.on('connection', function(socket){
 
 	var socket_id = socket.id.slice(2)
 
