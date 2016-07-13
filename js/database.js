@@ -2,7 +2,7 @@ var mysql = require('mysql')
 var moment = require('moment')
 var fs = require('fs')
 var vm = require('vm')
-vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
+vm.runInThisContext(fs.readFileSync(__dirname + '/../config.js'))
 
 var pool = mysql.createPool({
 	connectionLimit	: 100,
