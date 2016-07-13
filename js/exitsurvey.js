@@ -59,16 +59,12 @@ function make_slides(f){
          		"condition" : exp.condition,
          		"response" : exp.response,
          		"subject_information": exp.subj_data
-          		// "time_in_minutes" : configure this somehow
     		};
 			setTimeout(function() {
+				var destination = 'thanks.html?workerId=' + exp.user;
+				window.location.href=destination;
 				turk.submit(exp.data);
-				setTimeout(function(){
-					var destination = '/thanks.html?workerId=' + exp.user
-					window.location.href = destination
-				}, 500)
-				window.location.href = destination;
-			}, 1000)
+			}, 500)
 		}
 	})
 
