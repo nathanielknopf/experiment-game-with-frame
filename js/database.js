@@ -1,12 +1,15 @@
 var mysql = require('mysql')
 var moment = require('moment')
+var fs = require('fs')
+var vm = require('vm')
+vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
 
 var pool = mysql.createPool({
 	connectionLimit	: 100,
-	host			: 'localhost',
-	user			: 'root',
-	password		: 'cocolab',
-	database		: 'game',
+	host			: configs.mysql_host,
+	user			: configs.mysql_user,
+	password		: configs.mysql_password,
+	database		: configs.mysql_database,
 	debut			: false
 })
 
