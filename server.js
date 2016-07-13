@@ -2,11 +2,18 @@ var express = require('express')
 var app = express()
 var fs = require('fs')
 var vm = require('vm')
+var moment = require('moment')
 
 vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
 var use_db = configs.use_db
 var time_to_play = configs.play_time
 var exit_survey_url = configs.exit_survey_url
+
+var getTimestamp = function(){
+	var date = moment().format().slice(0, 10)
+	var time = moment().format().slice(11, 19)
+	return date + ' ' + time
+}
 
 try {
 	var https = require('https')
@@ -46,6 +53,10 @@ app.get(/^(.+)$/, function(req, res){
 var thanksnsp = io.of('/thanks-nsp')
 thanksnsp.on('connection', function(socket){
 	socket.on('finished', function(workerId){
+		var to_write = '"' + getTimestamp() + '","' + workerId + '","0.5"'
+		fs.appendFile('payouts.csv', to_write, function(err){
+			console.log(err)
+		})
 		console.log(workerId + ' has finished the experiment.')
 	})	
 })
