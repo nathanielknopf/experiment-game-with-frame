@@ -50,21 +50,11 @@ app.get(/^(.+)$/, function(req, res){
      res.sendFile(__dirname + req.params[0])
  });
 
-var thanksnsp = io.of('/thanks-nsp')
-thanksnsp.on('connection', function(socket){
-	socket.on('finished', function(workerId){
-		var to_write = '"' + getTimestamp() + '","' + workerId + '","0.5"'
-		fs.appendFile('payouts.csv', to_write, function(err){
-			console.log(err)
-		})
-		console.log(workerId + ' has finished the experiment.')
-	})	
-})
-
 var gamensp = io.of('/game-nsp')
 gamensp.on('connection', function(socket){
 
-	var socket_id = socket.id.slice(2)
+	//var socket_id = socket.id.slice(2)
+	var socket_id = socket.id
 
 	console.log("Connection from: " + socket_id)
 	console.log(socket_id)

@@ -61,8 +61,6 @@ function make_slides(f){
          		"subject_information": exp.subj_data
     		};
 			setTimeout(function() {
-				var destination = 'thanks.html?workerId=' + exp.user;
-				window.location.href=destination;
 				turk.submit(exp.data);
 			}, 500)
 		}
