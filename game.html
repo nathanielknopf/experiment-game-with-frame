@@ -38,17 +38,12 @@ var param = function( param, use_referrer ) {
     } 
 }
 
-var condition = param('condition')
-var game_mode = (condition == '') ? 'a' : condition
-console.log("Condition: " + game_mode)
-
 socket.on('redirect', function(extension){
-    var condition = param("condition", false)
     var assignmentId = param("assignmentId", false)
     var hitId = param("hitId", false)
     var workerId = param("workerId", false)
     var turkSubmitTo = param("turkSubmitTo", false)
-    var destination = extension + '?condition=' + condition + '&assignmentId=' + assignmentId + '&hitId=' + hitId + '&workerId=' + workerId + '&turkSubmitTo=' + turkSubmitTo
+    var destination = extension + '?assignmentId=' + assignmentId + '&hitId=' + hitId + '&workerId=' + workerId + '&turkSubmitTo=' + turkSubmitTo
     window.location.href = destination
 })
 
@@ -63,111 +58,104 @@ socket.on('timer', function(seconds){
 var game = new Phaser.Game(720, 540, Phaser.AUTO, '', { preload: preload, create: create, update: update })
 
 function preload() {
-    game.load.image('background', 'assets/grid.jpg')
-    game.load.image('blob', 'assets/blob.png')
-    game.load.image('tree', 'assets/tree.png')
-    game.load.image('apple', 'assets/apple.png')
-    game.load.image('rock', 'assets/rock.png')
+    game.load.image('background', 'assets/background.png')
+    game.load.image('blob', 'assets/blob_new.png')
+    game.load.image('tree', 'assets/tree_new.png')
+    game.load.image('apple', 'assets/apple_new.png')
+    game.load.image('rock', 'assets/rock_new.png')
+    game.load.image('pond', 'assets/pond.png')
+    game.load.image('log', 'assets/log.png')
+    game.load.image('fish', 'assets/fish.png')
+    // game.load.image('multi_fish', 'assets/multi_fish.png')
 }
 
 var player
 var platforms
 var cursors
+
 var trees
 var apples
-
-var facing = 'right'
-
-var big_rocks
-var small_rocks
-
-var big_rocks_scale = 1.2
-var small_rocks_scale = 0.6
-
-var big_rocks_prob
-var small_rocks_prob
-
-if(game_mode == 'a'){
-    big_rocks_prob = 0.9
-    small_rocks_prob = 0.1
-}else if(game_mode == 'b'){
-    big_rocks_prob = 0.5
-    small_rocks_prob = 0.5
-}
-
-var rock_spawn_prob = 0.5
+var rocks
+var logs
+var fishes
+// var multi_fishes
+var ponds
+var backgrounds
 
 var spacebar
 var spacebar_pressed = false
 
-var apple_count = 0
+var a
+var a_pressed = false
+
+var score = 0
+
+var facing = 'right'
 
 var inventory = {
-    pocket: null
+    pocket: null,
+    apples: 1
 }
 
-var tree_locations = {
-    0 : [350, 200],
-    1 : [190, 40],
-    2 : [80, 220],
-    3 : [220, 350],
-    4 : [500, 350],
-    5 : [550, 100]
-}
-
-var rock_locations = {
-    0 : {x:10, y:35},
-    1 : {x:400, y:40},
-    2 : {x:190, y:120},
-    3 : {x:85, y:350},
-    4 : {x:475, y:200},
-    5 : {x:200, y:450},
-    6 : {x:450, y:480},
-    7 : {x:600, y:270},
-    8 : {x:250, y:250},
-    9 : {x:650, y:450},
-    10: {x:400, y:400},
-    11: {x:100, y:50}
-}
+var tree_locations = [{x:350, y:200}, {x:190, y:40}, {x:80, y:220}]
+var pond_locations = [{x:220, y:350}, {x:500, y:350}, {x:550, y:100}]
+var rock_locations = [{x:10, y:35}, {x:400, y:40}, {x:190, y:120}, {x:85, y:350}, {x:475, y:200}, {x:200, y:450}]
+var log_locations = [{x:450, y:480}, {x:600, y:270}, {x:250, y:250}, {x:650, y:450}, {x:400, y:400}, {x:100, y:50}]
 
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE)
 
-    var background = game.add.sprite(0, 0, 'background')
-    background.scale.setTo(1.5, 1.5)
+    backgrounds = game.add.group()
+    var background = backgrounds.create(0, 0, 'background')
 
     trees = game.add.group()
     trees.enableBody = true
 
-    for (var i = 0; i < 6; i++){
-	var x = tree_locations[i][0]
-        var y = tree_locations[i][1]
+    for (var i = 0; i < tree_locations.length; i++){
+	   var x = tree_locations[i].x
+        var y = tree_locations[i].y
         var tree = trees.create(x, y, 'tree')
-        tree.scale.setTo(1.5, 1.5)
+        tree.scale.setTo(0.2, 0.2)
         tree.body.immovable = true
     }
 
-    small_rocks = game.add.group()
-    small_rocks.enableBody = true
+    rocks = game.add.group()
+    rocks.enableBody = true
 
-    big_rocks = game.add.group()
-    big_rocks.enableBody = true
-
-    for (var i = 0; i < 12; i++){
+    for (var i = 0; i < rock_locations.length; i++){
         var x = rock_locations[i].x
         var y = rock_locations[i].y
-        if(Math.random() >= rock_spawn_prob){
-            var rock = big_rocks.create(x, y, 'rock')
-            rock.scale.setTo(big_rocks_scale, big_rocks_scale)
-        }else{
-            var rock = small_rocks.create(x, y, 'rock')
-            rock.scale.setTo(small_rocks_scale, small_rocks_scale)
-        }
+        var rock = rocks.create(x, y, 'rock')
+        rock.scale.setTo(.11, .15)
+    }
+
+    ponds = game.add.group()
+    ponds.enableBody = true
+
+    for (var i = 0; i < pond_locations.length; i++){
+        var x = pond_locations[i].x
+        var y = pond_locations[i].y
+        var pond = ponds.create(x, y, 'pond')
+        pond.scale.setTo(0.2, 0.2)
+    }
+
+    logs = game.add.group()
+    logs.enableBody = true
+
+    for (var i = 0; i < log_locations.length; i++){
+        var x = log_locations[i].x
+        var y = log_locations[i].y
+        var log = logs.create(x, y, 'log')
     }
 
     apples = game.add.group()
     apples.enableBody = true
+
+    fishes = game.add.group()
+    fishes.enableBody = true
+    multi_fishes = game.add.group()
+    multi_fishes = game.add.group()
 
     player = game.add.sprite(40, game.world.height - 40, 'blob')
     player.anchor.setTo(0.5, 0.5)
@@ -178,31 +166,42 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys()
 
     spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+    a = game.input.keyboard.addKey(Phaser.Keyboard.A)
+
 }
 
 function update() {
 
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, trees)
-    // game.physics.arcade.collide(player, small_rocks)
-    // game.physics.arcade.collide(player, big_rocks)
+    game.physics.arcade.collide(player, ponds)
 
-    game.physics.arcade.overlap(big_rocks, trees, bigRockCollision, null, this)
-    game.physics.arcade.overlap(small_rocks, trees, smallRockCollision, null, this)
+    game.physics.arcade.overlap(rocks, trees, rockCollision, null, this)
+    game.physics.arcade.overlap(logs, ponds, logCollision, null, this)
+    // game.physics.arcade.overlap(apples, ponds, appleCollision, null, thiss)
 
-    game.physics.arcade.overlap(player, big_rocks, collectBigRock, null, this)
-    game.physics.arcade.overlap(player, small_rocks, collectSmallRock, null, this)
-
+    game.physics.arcade.overlap(player, rocks, collectRock, null, this)
+    game.physics.arcade.overlap(player, logs, collectLog, null, this)
     game.physics.arcade.overlap(player, apples, collectApple, null, this)
+    game.physics.arcade.overlap(player, fishes, collectFish, null, this)
 
     // spacebar
     if (spacebar.isDown){
         if(!spacebar_pressed){
             spacebar_pressed = true
-            shootRock()
+            shootPocket()
         }
     } else if (spacebar.isUp){
         spacebar_pressed = false
+    }
+
+    if (a.isDown){
+        if(!a_pressed){
+            a_pressed = true
+            shootApple()
+        }
+    } else if (a.isUp){
+        a_pressed = false
     }
 
     //  Reset the players velocity (movement)
@@ -242,55 +241,41 @@ function update() {
     }
 }
 
-function bigRockCollision(rock, tree){
-    console.log("Big Rock Collision!")
-    if(Math.random() < big_rocks_prob){
-        rock.kill()
-        spawnApple(tree)
-    }else{
-        if(rock.body.velocity.x >= 0){
-            rock.body.velocity.x = 0
-            rock.x -= 30
-        }else{
-            rock.body.velocity.x = 0
-            rock.x += 55
-        }
-    }
+function rockCollision(rock, tree){
+    console.log("rock collision")
+    rock.kill()
+    spawnApple(tree)
 }
 
-function smallRockCollision(rock, tree){
-    console.log("Small Rock Collision!")
-    if(Math.random() < small_rocks_prob){
-        rock.kill()
-        spawnApple(tree)
-    }else{
-        if(rock.body.velocity.x >= 0){
-            rock.body.velocity.x = 0
-            rock.x -= 40
-        }else{
-            rock.body.velocity.x = 0
-            rock.x += 36
-        }
-    }
+function logCollision(log, pond){
+    console.log("log collision")
+    log.kill()
+    spawnFish(pond)
 }
 
-function collectBigRock(player, rock){
+// function appleCollision(apple, pond){
+//     console.log("apple collision")
+//     apple.kill()
+//     spawnMultiFish(pond)
+// }
+
+function collectRock(player, rock){
     if(inventory.pocket == null){
         rock.kill()
-        inventory.pocket = 'big rock'
-        socket.emit('rocks', 'big')
-        document.getElementById("pocketlabel").innerHTML = "Pocket: big rock"
+        inventory.pocket = 'rock'
+        socket.emit('rocks', 'rock')
+        document.getElementById("pocketlabel").innerHTML = "Pocket: rock"
     }else{
         console.log("Pocket not empty.")
     }
 }
 
-function collectSmallRock(player, rock){
+function collectLog(player, log){
     if(inventory.pocket == null){
-        rock.kill()
-        inventory.pocket = 'small rock'
-        socket.emit('rocks', 'small')
-        document.getElementById("pocketlabel").innerHTML = "Pocket: small rock"
+        log.kill()
+        inventory.pocket = 'log'
+        socket.emit('rocks', 'rock') //this is not true
+        document.getElementById("pocketlabel").innerHTML = "Pocket: log"
     }else{
         console.log("Pocket not empty.")
     }
@@ -298,10 +283,19 @@ function collectSmallRock(player, rock){
 
 function collectApple(player, apple){
     apple.kill()
-    apple_count += 1
-    document.getElementById("scorelabel").innerHTML = "Score: " + apple_count
+    score += 1
+    inventory.apples += 1
+    document.getElementById("scorelabel").innerHTML = "Score: " + score
     console.log("Apple collected.")
-    socket.emit('apples', apple_count)
+    socket.emit('apples', score)
+}
+
+function collectFish(player, fish){
+    fish.kill()
+    score += 1
+    document.getElementById("scorelabel").innerHTML = "Score: " + score
+    console.log("Fish collected.")
+    socket.emit('apples', score)
 }
 
 function spawnApple(tree){
@@ -313,25 +307,51 @@ function spawnApple(tree){
     }, 50)
 }
 
-function shootRock(){
+function spawnFish(pond){
+    var x = 0
+    var y = 0
+    //actually fix this
+    setTimeout(function(){
+        var fish = fishes.create(x, y, 'fish')
+    }, 50)
+}
+
+// function spawnMultiFish(pond){
+//     var x = 0
+//     var y = 0
+//     setTimeout(function(){
+//         var multi_fish = multi_fishes.create(x, y, 'multi_fish')
+//     }, 50)
+// }
+
+function shootPocket(){
     var speed = (facing == 'right') ? 350 : -350
     if(inventory.pocket != null){
-        if(inventory.pocket == 'big rock'){
-	    var offset = (facing == 'right') ? 30 : -55
-            var rock = big_rocks.create(player.x+offset, player.y, 'rock')
-            rock.scale.setTo(big_rocks_scale, big_rocks_scale)
+        if(inventory.pocket == 'rock'){
+            var offset = (facing == 'right') ? 30 : -55
+            var rock = rocks.create(player.x+offset, player.y, 'rock')
+            rock.scale.setTo(.11, .15)
             rock.body.velocity.x = speed
-        }else if(inventory.pocket == 'small rock'){
-	    var offset = (facing == 'right') ? 30 : -36
-            var rock = small_rocks.create(player.x+offset, player.y, 'rock')
-            rock.scale.setTo(small_rocks_scale, small_rocks_scale)
-            rock.body.velocity.x = speed
+        }else if(inventory.pocket == 'log'){
+            var offset = (facing == 'right') ? 30 : -55
+            var log = logs.create(player.x+offset, player.y, 'log')
+            log.body.velocity.x = speed
         }
         inventory.pocket = null
-        socket.emit('rocks', 'empty')
-        document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
     }else{
-        console.log("Pocket empty; cannot throw rock.")
+        console.log("Pocket empty.")
+    }
+}
+
+function shootApple(){
+    var speed = (facing == 'right') ? 350 : -350
+    if(inventory.apples >= 0){
+        var offset = (facing == 'right') ? 30 : -55
+        var apple = apples.create(player.x+offset, player.y, 'apple')
+        apple.scale.setTo(.125, .125)
+        apple.body.velocity.x = speed
+    }else{
+        console.log("No apples in inventory")
     }
 }
 
