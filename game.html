@@ -346,6 +346,7 @@ function shootPocket(){
 function shootApple(){
     var speed = (facing == 'right') ? 350 : -350
     if(inventory.apples >= 0){
+        inventory.apples -= 1
         var offset = (facing == 'right') ? 30 : -55
         var apple = apples.create(player.x+offset, player.y, 'apple')
         apple.scale.setTo(.125, .125)
