@@ -185,7 +185,11 @@ function update() {
     game.physics.arcade.collide(player, ponds)
     game.physics.arcade.collide(logs, trees)
     game.physics.arcade.collide(rocks, ponds)
-    // game.physics.arcade.collide(apples, ponds) //comment this out for multi_fishes
+    game.physics.arcade.collide(rocks, apples)
+    game.physics.arcade.collide(fishes, trees)
+    game.physics.arcade.collide(fishes, ponds)
+    game.physics.arcade.collide(fishes, apples)
+    game.physics.arcade.collide(fishes, rocks)
 
     game.physics.arcade.overlap(rocks, trees, rockCollision, null, this)
     game.physics.arcade.overlap(logs, ponds, logCollision, null, this)
