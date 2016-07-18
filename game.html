@@ -66,7 +66,7 @@ function preload() {
     game.load.image('pond', 'assets/pond.png')
     game.load.image('log', 'assets/log.png')
     game.load.image('fish', 'assets/fish.png')
-    // game.load.image('multi_fish', 'assets/multi_fish.png')
+    game.load.image('multi_fish', 'assets/multi_fish.png')
 }
 
 var player
@@ -178,16 +178,18 @@ function update() {
     game.physics.arcade.collide(player, trees)
     game.physics.arcade.collide(player, ponds)
     game.physics.arcade.collide(logs, trees)
-    game.physics.arcade.collide(apples, ponds) //comment this out for multi_fishes
+    game.physics.arcade.collide(rocks, ponds)
+    // game.physics.arcade.collide(apples, ponds) //comment this out for multi_fishes
 
     game.physics.arcade.overlap(rocks, trees, rockCollision, null, this)
     game.physics.arcade.overlap(logs, ponds, logCollision, null, this)
-    // game.physics.arcade.overlap(apples, ponds, appleCollision, null, this)
+    game.physics.arcade.overlap(apples, ponds, appleCollision, null, this)
 
     game.physics.arcade.overlap(player, rocks, collectRock, null, this)
     game.physics.arcade.overlap(player, logs, collectLog, null, this)
     game.physics.arcade.overlap(player, apples, collectApple, null, this)
     game.physics.arcade.overlap(player, fishes, collectFish, null, this)
+    game.physics.arcade.overlap(player, multi_fishes, collectMultiFish, null, this)
 
     // spacebar
     if (spacebar.isDown){
@@ -257,11 +259,11 @@ function logCollision(log, pond){
     spawnFish(pond)
 }
 
-// function appleCollision(apple, pond){
-//     console.log("apple collision")
-//     apple.kill()
-//     spawnMultiFish(pond)
-// }
+function appleCollision(apple, pond){
+    console.log("apple collision")
+    apple.kill()
+    spawnMultiFish(pond)
+}
 
 function collectRock(player, rock){
     if(inventory.pocket == null){
@@ -302,6 +304,14 @@ function collectFish(player, fish){
     socket.emit('fishes', score)
 }
 
+function collectMultiFish(player, multi_fish){
+    multi_fish.kill()
+    score += 2
+    document.getElementById("scorelabel").innerHTML = "Score: " + score
+    console.log("Multifish collected.")
+    socket.emit('fishes', score)
+}
+
 function spawnApple(tree){
     var x = tree.x
     var y = tree.y + 60
@@ -312,22 +322,23 @@ function spawnApple(tree){
 }
 
 function spawnFish(pond){
-    var x = 0
-    var y = 0
+    var x = pond.x - 80
+    var y = pond.y
     //actually fix this
     setTimeout(function(){
         var fish = fishes.create(x, y, 'fish')
-        fish.scale.setTo(.125, .125)
+        fish.scale.setTo(0.125, 0.125)
     }, 50)
 }
 
-// function spawnMultiFish(pond){
-//     var x = 0
-//     var y = 0
-//     setTimeout(function(){
-//         var multi_fish = multi_fishes.create(x, y, 'multi_fish')
-//     }, 50)
-// }
+function spawnMultiFish(pond){
+    var x = pond.x - 80
+    var y = pond.y
+    setTimeout(function(){
+        var multi_fish = multi_fishes.create(x, y, 'multi_fish')
+        multi_fish.scale.setTo(0.125, 0.125)
+    }, 50)
+}
 
 function shootPocket(){
     var speed = (facing == 'right') ? 350 : -350
