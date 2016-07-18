@@ -138,6 +138,7 @@ function create() {
         var y = pond_locations[i].y
         var pond = ponds.create(x, y, 'pond')
         pond.scale.setTo(0.4, 0.4)
+        pond.body.immovable = true
     }
 
     logs = game.add.group()
@@ -179,7 +180,7 @@ function update() {
 
     game.physics.arcade.overlap(rocks, trees, rockCollision, null, this)
     game.physics.arcade.overlap(logs, ponds, logCollision, null, this)
-    // game.physics.arcade.overlap(apples, ponds, appleCollision, null, thiss)
+    // game.physics.arcade.overlap(apples, ponds, appleCollision, null, this)
 
     game.physics.arcade.overlap(player, rocks, collectRock, null, this)
     game.physics.arcade.overlap(player, logs, collectLog, null, this)
