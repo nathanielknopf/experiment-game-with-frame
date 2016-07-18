@@ -94,7 +94,7 @@ var facing = 'right'
 
 var inventory = {
     pocket: null,
-    apples: 1
+    apples: 0
 }
 
 var tree_locations = [{x:350, y:200}, {x:190, y:40}, {x:80, y:220}]
@@ -264,7 +264,7 @@ function collectRock(player, rock){
     if(inventory.pocket == null){
         rock.kill()
         inventory.pocket = 'rock'
-        socket.emit('rocks', 'rock')
+        socket.emit('rocks')
         document.getElementById("pocketlabel").innerHTML = "Pocket: rock"
     }else{
         console.log("Pocket not empty.")
@@ -275,7 +275,7 @@ function collectLog(player, log){
     if(inventory.pocket == null){
         log.kill()
         inventory.pocket = 'log'
-        socket.emit('rocks', 'rock') //this is not true
+        socket.emit('logs') //this is not true
         document.getElementById("pocketlabel").innerHTML = "Pocket: log"
     }else{
         console.log("Pocket not empty.")
@@ -288,7 +288,7 @@ function collectApple(player, apple){
     inventory.apples += 1
     document.getElementById("scorelabel").innerHTML = "Score: " + score
     console.log("Apple collected.")
-    socket.emit('apples', score)
+    socket.emit('apples', 'more')
 }
 
 function collectFish(player, fish){
@@ -296,7 +296,7 @@ function collectFish(player, fish){
     score += 1
     document.getElementById("scorelabel").innerHTML = "Score: " + score
     console.log("Fish collected.")
-    socket.emit('apples', score)
+    socket.emit('fishes', score)
 }
 
 function spawnApple(tree){
@@ -341,6 +341,7 @@ function shootPocket(){
             log.body.velocity.x = speed
         }
         inventory.pocket = null
+        socket.emit('pocket empty')
     }else{
         console.log("Pocket empty.")
     }
@@ -354,6 +355,7 @@ function shootApple(){
         var apple = apples.create(player.x+offset, player.y, 'apple')
         apple.scale.setTo(.125, .125)
         apple.body.velocity.x = speed
+        socket.emit('apples', 'less')
     }else{
         console.log("No apples in inventory")
     }

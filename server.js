@@ -66,7 +66,8 @@ gamensp.on('connection', function(socket){
 
 	var inventory = {
 		pocket: 'empty',
-		points: 0
+		points: 0,
+		apples: 0
 	}
 
 	console.log("Connection from user: " + user + ".")
@@ -91,20 +92,41 @@ gamensp.on('connection', function(socket){
 
 	timer(time_to_play)
 
-	socket.on('apples', function(apples){
-		inventory.points += 1
+	var updateDB = function(){
 		if(use_db){
-			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.points)
-		// 	database.updatePlayer(socket_id, 'apples', apples)
+			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.apples, inventory.points)
 		}
+	}
+	
+	socket.on('apples', function(direction){
+		if(direction == 'more'){
+			inventory.points += 1
+			inventory.apples += 1
+		}else if(direction == 'less'){
+			inventory.apples -= 1
+		}
+
+		updateDB()
 	})
 
-	socket.on('rocks', function(rock){
-		inventory.pocket = rock
-		if(use_db){
-			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.points)
-			// database.updatePlayer(socket_id, 'rocks', rock)
-		}
+	socket.on('fishes', function(fishes){
+		inventory.points += 1
+		updateDB()
+	})
+
+	socket.on('rocks', function(){
+		inventory.pocket = 'rock'
+		updateDB()
+	})
+
+	socket.on('logs', function(){
+		inventory.pocket = 'log'
+		updateDB()
+	})
+
+	socket.on('pocket empty', function(){
+		inventory.pocket = 'null'
+		updateDB()
 	})
 })
 
