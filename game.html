@@ -297,7 +297,7 @@ function collectFish(player, fish){
     inventory.fish += 2
     document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Fish collected.")
-    socket.emit('fishes', score)
+    socket.emit('fishes', inventory.score)
 }
 
 function spawnApple(x, y){
