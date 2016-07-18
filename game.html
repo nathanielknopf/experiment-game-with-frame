@@ -86,6 +86,15 @@ var spacebar_pressed = false
 var a
 var a_pressed = false
 
+var r
+var r_pressed = false
+
+var l
+var l_pressed = false
+
+var f
+var f_pressed = false
+
 var facing = 'right'
 
 var inventory = {
@@ -165,6 +174,9 @@ function create() {
 
     spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
     a = game.input.keyboard.addKey(Phaser.Keyboard.A)
+    r = game.input.keyboard.addKey(Phaser.Keyboard.R)
+    l = game.input.keyboard.addKey(Phaser.Keyboard.L)
+    f = game.input.keyboard.addKey(Phaser.Keyboard.F)
 
 }
 
@@ -199,10 +211,37 @@ function update() {
     if (a.isDown){
         if(!a_pressed){
             a_pressed = true
-            shootApple()
+            shoot('apple')
         }
     } else if (a.isUp){
         a_pressed = false
+    }
+
+    if (r.isDown){
+        if(!r_pressed){
+            r_pressed = true
+            shoot('rock')
+        }   
+    }else if (r.isUp){
+        r_pressed = false
+    }
+
+    if (l.isDown){
+        if(!l_pressed){
+            l_pressed = true
+            shoot('log')
+        }   
+    }else if (l.isUp){
+        l_pressed = false
+    }
+
+    if (f.isDown){
+        if(!f_pressed){
+            f_pressed = true
+            shoot('fish')
+        }   
+    }else if (f.isUp){
+        f_pressed = false
     }
 
     //  Reset the players velocity (movement)
@@ -286,7 +325,7 @@ function collectApple(player, apple){
     apple.kill()
     inventory.score += 1
     inventory.apples += 1
-    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
+    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
     console.log("Apple collected.")
     socket.emit('apples', 'more')
 }
@@ -294,10 +333,10 @@ function collectApple(player, apple){
 function collectFish(player, fish){
     fish.kill()
     inventory.score += 2
-    inventory.fish += 2
-    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
+    inventory.fish += 1
+    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
     console.log("Fish collected.")
-    socket.emit('fishes', inventory.score)
+    socket.emit('fishes', 'more')
 }
 
 function spawnApple(x, y){
@@ -320,44 +359,58 @@ function spawnMultiFish(x, y){
     spawnFish(x, y+100)
 }
 
-function shootPocket(){
+function shoot(item){
     var speed = (facing == 'right') ? 350 : -350
-    if(inventory.pocket != null){
-        if(inventory.pocket == 'rock'){
+    if (item == 'apple'){
+        if(inventory.apples >= 0){
+            inventory.apples -= 1
             var offset = (facing == 'right') ? 30 : -55
-            var rock = rocks.create(player.x+offset, player.y, 'rock')
-            rock.scale.setTo(.11, .15)
-            rock.body.velocity.x = speed
-        }else if(inventory.pocket == 'log'){
+            var apple = apples.create(player.x+offset, player.y, 'apple')
+            apple.scale.setTo(0.125, 0.125)
+            apple.body.velocity.x = speed
+            document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
+            socket.emit('apples', 'less')
+        }else{
+            console.log("No apples in inventory")
+        }
+    } else if (item == 'fish'){
+        if(inventory.fish >= 0){
+            inventory.fish -= 1
             var offset = (facing == 'right') ? 30 : -55
-            var log = logs.create(player.x+offset, player.y, 'log')
-            log.scale.setTo(0.2, 0.2)
-            log.body.velocity.x = speed
+            var fish = fishes.create(player.x+offset, player.y, 'fish')
+            fish.scale.setTo(0.125, 0.125)
+            fish.body.velocity.x = speed
+            document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
+            socket.emit('fishes', 'less')
+        }else{
+            console.log("No fish in inventory")
+        }
+    } else {
+        if(item == 'log'){
+            if(inventory.pocket == 'log'){
+                var offset = (facing == 'right') ? 30 : -80
+                var log = logs.create(player.x+offset, player.y, 'log')
+                log.scale.setTo(0.2, 0.2)
+                log.body.velocity.x = speed
+            }else{
+                console.log("Pocket empty. Cannot throw log.")
+            }
+        }else if(item == 'rock'){
+            if(inventory.pocket == 'rock'){
+                var offset = (facing == 'right') ? 30 : -55
+                var rock = rocks.create(player.x+offset, player.y, 'rock')
+                rock.scale.setTo(0.11, 0.15)
+            }else{
+                console.log("Pocket empty. Cannot throw log.")
+            }
         }
         inventory.pocket = null
-        document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
-        socket.emit('pocket empty')
-    }else{
-        console.log("Pocket empty.")
     }
 }
 
-function shootApple(){
-    var speed = (facing == 'right') ? 350 : -350
-    if(inventory.apples >= 0){
-        inventory.apples -= 1
-        var offset = (facing == 'right') ? 30 : -55
-        var apple = apples.create(player.x+offset, player.y, 'apple')
-        apple.scale.setTo(.125, .125)
-        apple.body.velocity.x = speed
-        socket.emit('apples', 'less')
-    }else{
-        console.log("No apples in inventory")
-    }
-}
 
 </script>
-<h3 id="scorelabel">Apples: 0, Fish: 0</h3>
+<h3 id="scorelabel">Apples: 0, Fish: 0 - Score: 0</h3>
 <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3>
 <p id="instructions">Controls: Move with arrow keys, pick up rocks by moving over them, throw rocks by pressing spacebar.<p>
 </body>

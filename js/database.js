@@ -46,17 +46,17 @@ var queryThis = function(to_query){
 }
 
 var createTable = function(name){
-	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '( name VARCHAR(30), ID VARCHAR(30), cond VARCHAR(1), pocket VARCHAR(10), apples INT, score INT, access TIMESTAMP)'
+	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '( name VARCHAR(30), ID VARCHAR(30), cond VARCHAR(1), pocket VARCHAR(10), apples INT, fishes INT, score INT, access TIMESTAMP)'
 	queryThis(new_table_query)
 }
 
 var addPlayer = function(name, condition, ID){
 	createTable(name) //make new table if it doesn't exist already
-	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "empty", 0, 0,"' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "empty", 0, 0, 0,"' + getTimestamp() + '")')
 }
 
-var updatePlayer = function(name, ID, condition, pocket, apples, score){
-	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "' + pocket + '", ' + apples + ', ' + score + ', "' + getTimestamp() + '")')
+var updatePlayer = function(name, ID, condition, pocket, apples, fishes, score){
+	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "' + pocket + '", ' + apples + ', ' + ', ' + fishes + ', ' score + ', "' + getTimestamp() + '")')
 }
 
 module.exports = {
