@@ -172,12 +172,10 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys()
 
-    spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
     a = game.input.keyboard.addKey(Phaser.Keyboard.A)
     r = game.input.keyboard.addKey(Phaser.Keyboard.R)
     l = game.input.keyboard.addKey(Phaser.Keyboard.L)
     f = game.input.keyboard.addKey(Phaser.Keyboard.F)
-
 }
 
 function update() {
@@ -197,16 +195,6 @@ function update() {
     game.physics.arcade.overlap(player, logs, collectLog, null, this)
     game.physics.arcade.overlap(player, apples, collectApple, null, this)
     game.physics.arcade.overlap(player, fishes, collectFish, null, this)
-
-    // spacebar
-    if (spacebar.isDown){
-        if(!spacebar_pressed){
-            spacebar_pressed = true
-            shootPocket()
-        }
-    } else if (spacebar.isUp){
-        spacebar_pressed = false
-    }
 
     if (a.isDown){
         if(!a_pressed){
@@ -407,7 +395,6 @@ function shoot(item){
         inventory.pocket = null
     }
 }
-
 
 </script>
 <h3 id="scorelabel">Apples: 0, Fish: 0 - Score: 0</h3>
