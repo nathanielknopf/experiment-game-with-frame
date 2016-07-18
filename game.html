@@ -177,6 +177,8 @@ function update() {
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, trees)
     game.physics.arcade.collide(player, ponds)
+    game.physics.arcade.collide(logs, trees)
+    game.physics.arcade.collide(apples, ponds) //comment this out for multi_fishes
 
     game.physics.arcade.overlap(rocks, trees, rockCollision, null, this)
     game.physics.arcade.overlap(logs, ponds, logCollision, null, this)
