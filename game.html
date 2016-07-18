@@ -66,7 +66,6 @@ function preload() {
     game.load.image('pond', 'assets/pond.png')
     game.load.image('log', 'assets/log.png')
     game.load.image('fish', 'assets/fish.png')
-    game.load.image('multi_fish', 'assets/multi_fish.png')
 }
 
 var player
@@ -78,7 +77,6 @@ var apples
 var rocks
 var logs
 var fishes
-// var multi_fishes
 var ponds
 var backgrounds
 
@@ -88,13 +86,13 @@ var spacebar_pressed = false
 var a
 var a_pressed = false
 
-var score = 0
-
 var facing = 'right'
 
 var inventory = {
     pocket: null,
-    apples: 0
+    apples: 0,
+    fish: 0,
+    score: 0
 }
 
 var tree_locations = [{x:350, y:200}, {x:190, y:40}, {x:80, y:220}]
@@ -156,8 +154,6 @@ function create() {
 
     fishes = game.add.group()
     fishes.enableBody = true
-    multi_fishes = game.add.group()
-    multi_fishes.enableBody = true
 
     player = game.add.sprite(40, game.world.height - 40, 'blob')
     player.anchor.setTo(0.5, 0.5)
@@ -189,7 +185,6 @@ function update() {
     game.physics.arcade.overlap(player, logs, collectLog, null, this)
     game.physics.arcade.overlap(player, apples, collectApple, null, this)
     game.physics.arcade.overlap(player, fishes, collectFish, null, this)
-    game.physics.arcade.overlap(player, multi_fishes, collectMultiFish, null, this)
 
     // spacebar
     if (spacebar.isDown){
@@ -250,19 +245,19 @@ function update() {
 function rockCollision(rock, tree){
     console.log("rock collision")
     rock.kill()
-    spawnApple(tree)
+    spawnApple(tree.x, tree.y + 60)
 }
 
 function logCollision(log, pond){
     console.log("log collision")
     log.kill()
-    spawnFish(pond)
+    spawnFish(pond.x - 80, pond.y)
 }
 
 function appleCollision(apple, pond){
     console.log("apple collision")
     apple.kill()
-    spawnMultiFish(pond)
+    spawnMultiFish(pond.x - 80, pond.y)
 }
 
 function collectRock(player, rock){
@@ -289,55 +284,40 @@ function collectLog(player, log){
 
 function collectApple(player, apple){
     apple.kill()
-    score += 1
+    inventory.score += 1
     inventory.apples += 1
-    document.getElementById("scorelabel").innerHTML = "Score: " + score
+    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Apple collected.")
     socket.emit('apples', 'more')
 }
 
 function collectFish(player, fish){
     fish.kill()
-    score += 1
-    document.getElementById("scorelabel").innerHTML = "Score: " + score
+    inventory.score += 2
+    inventory.fish += 2
+    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Fish collected.")
     socket.emit('fishes', score)
 }
 
-function collectMultiFish(player, multi_fish){
-    multi_fish.kill()
-    score += 2
-    document.getElementById("scorelabel").innerHTML = "Score: " + score
-    console.log("Multifish collected.")
-    socket.emit('fishes', score)
-}
-
-function spawnApple(tree){
-    var x = tree.x
-    var y = tree.y + 60
+function spawnApple(x, y){
     setTimeout(function(){
         var apple = apples.create(x, y, 'apple')
         apple.scale.setTo(.125, .125)
     }, 50)
 }
 
-function spawnFish(pond){
-    var x = pond.x - 80
-    var y = pond.y
-    //actually fix this
+function spawnFish(x, y){
     setTimeout(function(){
         var fish = fishes.create(x, y, 'fish')
         fish.scale.setTo(0.125, 0.125)
     }, 50)
 }
 
-function spawnMultiFish(pond){
-    var x = pond.x - 80
-    var y = pond.y
-    setTimeout(function(){
-        var multi_fish = multi_fishes.create(x, y, 'multi_fish')
-        multi_fish.scale.setTo(0.125, 0.125)
-    }, 50)
+function spawnMultiFish(x, y){
+    spawnFish(x, y)
+    spawnFish(x, y+50)
+    spawnFish(x, y+100)
 }
 
 function shootPocket(){
@@ -355,6 +335,7 @@ function shootPocket(){
             log.body.velocity.x = speed
         }
         inventory.pocket = null
+        document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
         socket.emit('pocket empty')
     }else{
         console.log("Pocket empty.")
@@ -376,7 +357,7 @@ function shootApple(){
 }
 
 </script>
-<h3 class="smallspace" id="scorelabel">Score: 0</h3>
+<h3 id="scorelabel">Apples: 0, Fish: 0</h3>
 <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3>
 <p id="instructions">Controls: Move with arrow keys, pick up rocks by moving over them, throw rocks by pressing spacebar.<p>
 </body>
