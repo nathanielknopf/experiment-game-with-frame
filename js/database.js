@@ -56,7 +56,7 @@ var addPlayer = function(name, condition, ID){
 }
 
 var updatePlayer = function(name, ID, condition, pocket, apples, fishes, score){
-	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "' + pocket + '", ' + apples + ', ' + ', ' + fishes + ', ' score + ', "' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "' + pocket + '", ' + apples + ', ' + fishes + ', ' + score + ', "' + getTimestamp() + '")')
 }
 
 module.exports = {
