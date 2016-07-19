@@ -403,18 +403,19 @@ function shoot(item){
                 var offset = (facing == 'right') ? 30 : -55
                 var rock = rocks.create(player.x+offset, player.y, 'rock')
                 rock.scale.setTo(0.11, 0.15)
+                rock.body.velocity.x = speed
             }else{
                 console.log("Pocket empty. Cannot throw log.")
             }
         }
         inventory.pocket = null
+        socket.emit('pocket empty')
     }
 }
 
 </script>
 <h3 id="scorelabel">Apples: 0, Fish: 0 - Score: 0</h3>
 <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3>
-<p id="instructions">Controls: Move with arrow keys, pick up rocks by moving over them, throw rocks by pressing spacebar.<p>
 <div class="fixed">
     <table>
         <tr>
