@@ -20,7 +20,7 @@ function make_slides(f){
 		start: function(){
 			exp.startT = Date.now()
 			$(".err").hide()
-			$(".prompt_one").html("The next Turker will have to complete a task in a world like this one. However, some elements of the world may be missing. They will have less time than you did in order to complete there task. Tell them something that will help them complete their task.")
+			$(".prompt_one").html("You've just explored the world of Lurekon. The next Turker who plays this game will complete a task in a world like Lurekon, but they will have <b>less time</b> to complete their task. Help them score points by <b>sharing with them what you've learned</b>")
 		},
 		button: function(){
 			response_one = $("#response_one").val()

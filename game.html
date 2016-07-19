@@ -15,6 +15,16 @@
         h3.smallspace {
             line-height: 0.8
         }
+        div.fixed {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 150px;
+        }
+        table, th, td {
+            border: 1px solid black;
+            width: 150px;
+        }
     </style>
     <h3 class="smallspace" id="timelabel">Time remaining:</h3>
 </head>
@@ -405,5 +415,29 @@ function shoot(item){
 <h3 id="scorelabel">Apples: 0, Fish: 0 - Score: 0</h3>
 <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3>
 <p id="instructions">Controls: Move with arrow keys, pick up rocks by moving over them, throw rocks by pressing spacebar.<p>
+<div class="fixed">
+    <table>
+        <tr>
+            <th>Object</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td>Rock</td>
+            <td>0 points</td>
+        </tr>
+        <tr>
+            <td>Log</td>
+            <td>0 points</td>
+        </tr>
+        <tr>
+            <td>Apple</td>
+            <td>1 points</td>
+        </tr>
+        <tr>
+            <td>Fish</td>
+            <td>2 points</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
