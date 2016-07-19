@@ -368,6 +368,7 @@ function shoot(item){
             var apple = apples.create(player.x+offset, player.y, 'apple')
             apple.scale.setTo(0.125, 0.125)
             apple.body.velocity.x = speed
+            apple.body.collideWorldBounds = true
             document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
             socket.emit('apples', 'less')
         }else{
@@ -380,6 +381,7 @@ function shoot(item){
             var fish = fishes.create(player.x+offset, player.y, 'fish')
             fish.scale.setTo(0.125, 0.125)
             fish.body.velocity.x = speed
+            fish.body.collideWorldBounds = true
             document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
             socket.emit('fishes', 'less')
         }else{
@@ -392,6 +394,7 @@ function shoot(item){
                 var log = logs.create(player.x+offset, player.y, 'log')
                 log.scale.setTo(0.2, 0.2)
                 log.body.velocity.x = speed
+                log.body.collideWorldBounds = true
             }else{
                 console.log("Pocket empty. Cannot throw log.")
             }
@@ -401,6 +404,7 @@ function shoot(item){
                 var rock = rocks.create(player.x+offset, player.y, 'rock')
                 rock.scale.setTo(0.11, 0.15)
                 rock.body.velocity.x = speed
+                rock.body.collideWorldBounds = true
             }else{
                 console.log("Pocket empty. Cannot throw log.")
             }
