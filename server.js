@@ -66,7 +66,6 @@ gamensp.on('connection', function(socket){
 
 	var inventory = {
 		pocket: 'empty',
-		points: 0,
 		apples: 0,
 		fishes: 0
 	}
@@ -95,13 +94,12 @@ gamensp.on('connection', function(socket){
 
 	var updateDB = function(){
 		if(use_db){
-			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.apples, inventory.fishes, inventory.points)
+			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.apples, inventory.fishes)
 		}
 	}
 	
 	socket.on('apples', function(direction){
 		if(direction == 'more'){
-			inventory.points += 1
 			inventory.apples += 1
 		}else if(direction == 'less'){
 			inventory.apples -= 1
@@ -111,7 +109,6 @@ gamensp.on('connection', function(socket){
 
 	socket.on('fishes', function(direction){
 		if(direction == 'more'){
-			inventory.points += 2
 			inventory.fishes += 1
 		}else if(direction == 'less'){
 			inventory.fishes -= 1

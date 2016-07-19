@@ -111,7 +111,6 @@ var inventory = {
     pocket: null,
     apples: 0,
     fish: 0,
-    score: 0
 }
 
 var tree_locations = [{x:350, y:200}, {x:190, y:40}, {x:80, y:220}]
@@ -326,18 +325,16 @@ function collectLog(player, log){
 
 function collectApple(player, apple){
     apple.kill()
-    inventory.score += 1
     inventory.apples += 1
-    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
+    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Apple collected.")
     socket.emit('apples', 'more')
 }
 
 function collectFish(player, fish){
     fish.kill()
-    inventory.score += 2
     inventory.fish += 1
-    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
+    document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Fish collected.")
     socket.emit('fishes', 'more')
 }
@@ -365,25 +362,25 @@ function spawnMultiFish(x, y){
 function shoot(item){
     var speed = (facing == 'right') ? 350 : -350
     if (item == 'apple'){
-        if(inventory.apples >= 0){
+        if(inventory.apples > 0){
             inventory.apples -= 1
             var offset = (facing == 'right') ? 30 : -55
             var apple = apples.create(player.x+offset, player.y, 'apple')
             apple.scale.setTo(0.125, 0.125)
             apple.body.velocity.x = speed
-            document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
+            document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
             socket.emit('apples', 'less')
         }else{
             console.log("No apples in inventory")
         }
     } else if (item == 'fish'){
-        if(inventory.fish >= 0){
+        if(inventory.fish > 0){
             inventory.fish -= 1
             var offset = (facing == 'right') ? 30 : -55
             var fish = fishes.create(player.x+offset, player.y, 'fish')
             fish.scale.setTo(0.125, 0.125)
             fish.body.velocity.x = speed
-            document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish + " - Score: " + inventory.score
+            document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
             socket.emit('fishes', 'less')
         }else{
             console.log("No fish in inventory")
@@ -414,7 +411,7 @@ function shoot(item){
 }
 
 </script>
-<h3 id="scorelabel">Apples: 0, Fish: 0 - Score: 0</h3>
+<h3 id="scorelabel">Apples: 0, Fish: 0</h3>
 <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3>
 <div class="fixed">
     <table>
