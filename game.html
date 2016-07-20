@@ -302,7 +302,7 @@ function logCollision(log, pond){
     for (var i = 0; i < pond_list.length; i++){
         if (pond_list[i].x == pond.x && pond_list[i].y == pond.y){
             if (pond_list[i].n > 0){
-                spawnFish(pond.x - 80, pond.y, 1)
+                spawnFish(pond.x, pond.y + 80, 1)
                 pond_list[i].n -= 1
             }
         }
@@ -318,7 +318,7 @@ function appleCollision(apple, pond){
                 spawnFish(pond.x - 80, pond.y, 3)
                 pond_list[i].n -= 3
             }else if (pond_list[i].n > 0){
-                spawnFish(pond.x - 80, pond.y, pond_list[i].n)
+                spawnFish(pond.x, pond.y + 80, pond_list[i].n)
                 pond_list[i].n = 0
             }
         }
@@ -377,7 +377,7 @@ function spawnFish(x, y, n){
         for(var i = 0; i < n; i++){
             var fish = fishes.create(fish_x, fish_y, 'fish')
             fish.scale.setTo(0.125, 0.125)
-            fish_y += 50
+            fish_y += 30
         }
     }, 50)
 }
