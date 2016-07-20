@@ -113,8 +113,8 @@ var inventory = {
     fish: 0,
 }
 
-var tree_locations = [{x:350, y:200}, {x:190, y:40}, {x:80, y:220}]
-var pond_locations = [{x:220, y:350}, {x:500, y:350}, {x:550, y:100}]
+var tree_list = [{x:350, y:200, n:5}, {x:190, y:40, n:5}, {x:80, y:220, n:5}]
+var pond_list = [{x:220, y:350, n:5}, {x:500, y:350, n:5}, {x:550, y:100, n:5}]
 var rock_locations = [{x:10, y:35}, {x:400, y:40}, {x:190, y:120}, {x:85, y:350}, {x:475, y:200}, {x:200, y:450}]
 var log_locations = [{x:450, y:480}, {x:600, y:270}, {x:250, y:250}, {x:650, y:450}, {x:400, y:400}, {x:100, y:50}]
 
@@ -128,9 +128,9 @@ function create() {
     trees = game.add.group()
     trees.enableBody = true
 
-    for (var i = 0; i < tree_locations.length; i++){
-	   var x = tree_locations[i].x
-        var y = tree_locations[i].y
+    for (var i = 0; i < tree_list.length; i++){
+	   var x = tree_list[i].x
+        var y = tree_list[i].y
         var tree = trees.create(x, y, 'tree')
         tree.scale.setTo(0.2, 0.2)
         tree.body.immovable = true
@@ -149,9 +149,9 @@ function create() {
     ponds = game.add.group()
     ponds.enableBody = true
 
-    for (var i = 0; i < pond_locations.length; i++){
-        var x = pond_locations[i].x
-        var y = pond_locations[i].y
+    for (var i = 0; i < pond_list.length; i++){
+        var x = pond_list[i].x
+        var y = pond_list[i].y
         var pond = ponds.create(x, y, 'pond')
         pond.scale.setTo(0.4, 0.4)
         pond.body.immovable = true
@@ -286,19 +286,43 @@ function update() {
 function rockCollision(rock, tree){
     console.log("rock collision")
     rock.kill()
-    spawnApple(tree.x, tree.y + 60)
+    for (var i = 0; i < tree_list.length; i++){
+        if (tree_list[i].x == tree.x && tree_list[i].y == tree.y){
+            if (tree_list[i].n > 0){
+                spawnApple(tree.x, tree.y+60)
+                tree_list[i].n -= 1
+            }
+        }
+    }
 }
 
 function logCollision(log, pond){
     console.log("log collision")
     log.kill()
-    spawnFish(pond.x - 80, pond.y)
+    for (var i = 0; i < pond_list.length; i++){
+        if (pond_list[i].x == pond.x && pond_list[i].y == pond.y){
+            if (pond_list[i].n > 0){
+                spawnFish(pond.x - 80, pond.y, 1)
+                pond_list[i].n -= 1
+            }
+        }
+    }
 }
 
 function appleCollision(apple, pond){
     console.log("apple collision")
     apple.kill()
-    spawnMultiFish(pond.x - 80, pond.y)
+    for (var i = 0; i < pond_list.length; i++){
+        if (pond_list[i].x == pond.x && pond_list[i].y == pond.y){
+            if (pond_list[i].n >= 3){
+                spawnFish(pond.x - 80, pond.y, 3)
+                pond_list[i].n -= 3
+            }else if (pond_list[i].n > 0){
+                spawnFish(pond.x - 80, pond.y, pond_list[i].n)
+                pond_list[i].n = 0
+            }
+        }
+    }
 }
 
 function collectRock(player, rock){
@@ -346,18 +370,30 @@ function spawnApple(x, y){
     }, 50)
 }
 
-function spawnFish(x, y){
-    setTimeout(function(){
-        var fish = fishes.create(x, y, 'fish')
-        fish.scale.setTo(0.125, 0.125)
+function spawnFish(x, y, n){
+    var fish_x = x
+    var fish_y = y
+    setTimeout(function() {
+        for(int i = 0; i < n; i++){
+            var fish = fishes.create(fish_x, fish_y, 'fish')
+            fish.scale.setTo(0.125, 0.125)
+            fixy_y += 50
+        }
     }, 50)
 }
 
-function spawnMultiFish(x, y){
-    spawnFish(x, y)
-    spawnFish(x, y+50)
-    spawnFish(x, y+100)
-}
+// function spawnFish(x, y){
+//     setTimeout(function(){
+//         var fish = fishes.create(x, y, 'fish')
+//         fish.scale.setTo(0.125, 0.125)
+//     }, 50)
+// }
+
+// function spawnMultiFish(x, y){
+//     spawnFish(x, y)
+//     spawnFish(x, y+50)
+//     spawnFish(x, y+100)
+// }
 
 function shoot(item){
     var speed = (facing == 'right') ? 350 : -350
