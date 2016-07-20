@@ -315,7 +315,7 @@ function appleCollision(apple, pond){
     for (var i = 0; i < pond_list.length; i++){
         if (pond_list[i].x == pond.x && pond_list[i].y == pond.y){
             if (pond_list[i].n >= 3){
-                spawnFish(pond.x - 80, pond.y, 3)
+                spawnFish(pond.x, pond.y + 80, 3)
                 pond_list[i].n -= 3
             }else if (pond_list[i].n > 0){
                 spawnFish(pond.x, pond.y + 80, pond_list[i].n)
