@@ -374,10 +374,10 @@ function spawnFish(x, y, n){
     var fish_x = x
     var fish_y = y
     setTimeout(function() {
-        for(int i = 0; i < n; i++){
+        for(var i = 0; i < n; i++){
             var fish = fishes.create(fish_x, fish_y, 'fish')
             fish.scale.setTo(0.125, 0.125)
-            fixy_y += 50
+            fish_y += 50
         }
     }, 50)
 }
@@ -447,7 +447,7 @@ function shoot(item){
         }
         inventory.pocket = null
         socket.emit('pocket empty')
-        documet.getElementById("pocketlabel").innerHTML = "Pocket: empty"
+        document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
     }
 }
 
