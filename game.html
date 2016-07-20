@@ -447,6 +447,7 @@ function shoot(item){
         }
         inventory.pocket = null
         socket.emit('pocket empty')
+        documet.getElementById("pocketlabel").innerHTML = "Pocket: empty"
     }
 }
 
