@@ -420,31 +420,32 @@ function shoot(item){
         }else{
             console.log("No fish in inventory")
         }
-    } else {
-        if(item == 'log'){
-            if(inventory.pocket == 'log'){
-                var offset = (facing == 'right') ? 30 : -80
-                var log = logs.create(player.x+offset, player.y, 'log')
-                log.scale.setTo(0.2, 0.2)
-                log.body.velocity.x = speed
-                log.body.collideWorldBounds = true
-            }else{
-                console.log("Pocket empty. Cannot throw log.")
-            }
-        }else if(item == 'rock'){
-            if(inventory.pocket == 'rock'){
-                var offset = (facing == 'right') ? 30 : -55
-                var rock = rocks.create(player.x+offset, player.y, 'rock')
-                rock.scale.setTo(0.11, 0.15)
-                rock.body.velocity.x = speed
-                rock.body.collideWorldBounds = true
-            }else{
-                console.log("Pocket empty. Cannot throw log.")
-            }
+    } else if (item == 'log'){
+        if(inventory.pocket == 'log'){
+            var offset = (facing == 'right') ? 30 : -80
+            var log = logs.create(player.x+offset, player.y, 'log')
+            log.scale.setTo(0.2, 0.2)
+            log.body.velocity.x = speed
+            log.body.collideWorldBounds = true
+            inventory.pocket = null
+            socket.emit('pocket empty')
+            document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
+        }else{
+            console.log("Pocket empty. Cannot throw log.")
         }
-        inventory.pocket = null
-        socket.emit('pocket empty')
-        document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
+    }else if (item == 'rock'){
+        if(inventory.pocket == 'rock'){
+            var offset = (facing == 'right') ? 30 : -55
+            var rock = rocks.create(player.x+offset, player.y, 'rock')
+            rock.scale.setTo(0.11, 0.15)
+            rock.body.velocity.x = speed
+            rock.body.collideWorldBounds = true
+            inventory.pocket = null
+            socket.emit('pocket empty')
+            document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
+        }else{
+            console.log("Pocket empty. Cannot throw log.")
+        }
     }
 }
 
