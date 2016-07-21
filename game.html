@@ -17,8 +17,8 @@
         }
         div.fixed {
             position: fixed;
-            right: 0px;
-            top: 0px;
+            top: 0;
+            right: 0;
             width: 150px;
         }
         table, th, td {
@@ -67,19 +67,8 @@ socket.on('timer', function(seconds){
 
 var game = new Phaser.Game(720, 540, Phaser.AUTO, '', { preload: preload, create: create, update: update })
 
-function preload() {
-    game.load.image('background', 'assets/background.png')
-    game.load.image('blob', 'assets/blob.png')
-    game.load.image('tree', 'assets/tree.png')
-    game.load.image('apple', 'assets/apple.png')
-    game.load.image('rock', 'assets/rock.png')
-    game.load.image('pond', 'assets/pond.png')
-    game.load.image('log', 'assets/log.png')
-    game.load.image('fish', 'assets/fish.png')
-}
-
 var player
-var platforms
+var facing = 'right'
 var cursors
 
 var trees
@@ -95,17 +84,13 @@ var spacebar_pressed = false
 
 var a
 var a_pressed = false
-
 var r
 var r_pressed = false
-
 var l
 var l_pressed = false
-
 var f
 var f_pressed = false
 
-var facing = 'right'
 
 var inventory = {
     pocket: null,
@@ -118,9 +103,28 @@ var pond_list = [{x:220, y:350, n:5}, {x:500, y:350, n:5}, {x:550, y:100, n:5}]
 var rock_locations = [{x:10, y:35}, {x:400, y:40}, {x:190, y:120}, {x:85, y:350}, {x:475, y:200}, {x:100, y:450}]
 var log_locations = [{x:450, y:480}, {x:600, y:270}, {x:250, y:250}, {x:650, y:450}, {x:400, y:400}, {x:100, y:50}]
 
+function preload() {
+    game.load.image('background', 'assets/background.png')
+    game.load.image('blob', 'assets/blob.png')
+    game.load.image('tree', 'assets/tree.png')
+    game.load.image('apple', 'assets/apple.png')
+    game.load.image('rock', 'assets/rock.png')
+    game.load.image('pond', 'assets/pond.png')
+    game.load.image('log', 'assets/log.png')
+    game.load.image('fish', 'assets/fish.png')
+}
+
+
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE)
+
+    cursors = game.input.keyboard.createCursorKeys()
+
+    a = game.input.keyboard.addKey(Phaser.Keyboard.A)
+    r = game.input.keyboard.addKey(Phaser.Keyboard.R)
+    l = game.input.keyboard.addKey(Phaser.Keyboard.L)
+    f = game.input.keyboard.addKey(Phaser.Keyboard.F)
 
     backgrounds = game.add.group()
     var background = backgrounds.create(0, 0, 'background')
@@ -178,13 +182,6 @@ function create() {
 
     game.physics.arcade.enable(player)
     player.body.collideWorldBounds = true
-
-    cursors = game.input.keyboard.createCursorKeys()
-
-    a = game.input.keyboard.addKey(Phaser.Keyboard.A)
-    r = game.input.keyboard.addKey(Phaser.Keyboard.R)
-    l = game.input.keyboard.addKey(Phaser.Keyboard.L)
-    f = game.input.keyboard.addKey(Phaser.Keyboard.F)
 }
 
 function update() {
