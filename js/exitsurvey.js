@@ -25,7 +25,7 @@ function make_slides(f){
 		button: function(){
 			response_one = $("#response_one").val()
 			if(response_one.length == 0){
-				$(".err.show").show()
+				$(".err").show()
 			}else{
 				exp.response = response_one
 				exp.go()
