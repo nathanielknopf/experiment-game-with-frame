@@ -1,3 +1,9 @@
+var socket = io('/experiment-nsp');
+
+socket.on('condition', function(cond){
+	exp.condition = cond;
+});
+
 function param( param, use_referrer ) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+param+"=([^&#]*)"; 
@@ -48,7 +54,7 @@ function make_slides(f){
 }
 
 function init(){
-	exp.condition = _.sample(["a", "b"]);
+	exp.condition;
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,

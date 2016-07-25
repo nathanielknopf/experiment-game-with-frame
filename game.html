@@ -118,7 +118,8 @@ function preload() {
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE)
-    game.world.setBounds(1440, 540)
+    game.add.tileSprite(0, 0, 1440, 540, 'background');
+    game.world.setBounds(0, 0, 1440, 540)
 
     cursors = game.input.keyboard.createCursorKeys()
 
@@ -130,7 +131,6 @@ function create() {
     // backgrounds = game.add.group()
     // var background = backgrounds.create(0, 0, 'background')
 
-    game.add.tileSprite(0, 0, 1440, 540, 'background');
 
     trees = game.add.group()
     trees.enableBody = true
@@ -286,6 +286,7 @@ function update() {
 
 function rockCollision(rock, tree){
     console.log("rock collision")
+    socket.emit('action', 'rock collision')
     rock.kill()
     for (var i = 0; i < tree_list.length; i++){
         if (tree_list[i].x == tree.x && tree_list[i].y == tree.y){
@@ -299,6 +300,7 @@ function rockCollision(rock, tree){
 
 function logCollision(log, pond){
     console.log("log collision")
+    socket.emit('action', 'log collision'
     log.kill()
     for (var i = 0; i < pond_list.length; i++){
         if (pond_list[i].x == pond.x && pond_list[i].y == pond.y){
@@ -307,11 +309,12 @@ function logCollision(log, pond){
                 pond_list[i].n -= 1
             }
         }
-    }
+    })
 }
 
 function appleCollision(apple, pond){
     console.log("apple collision")
+    socket.emit('action', 'apple collision')
     apple.kill()
     for (var i = 0; i < pond_list.length; i++){
         if (pond_list[i].x == pond.x && pond_list[i].y == pond.y){
@@ -330,7 +333,7 @@ function collectRock(player, rock){
     if(inventory.pocket == null){
         rock.kill()
         inventory.pocket = 'rock'
-        socket.emit('rocks')
+        socket.emit('action', 'get rock')
         document.getElementById("pocketlabel").innerHTML = "Pocket: rock"
     }else{
         console.log("Pocket not empty.")
@@ -341,7 +344,7 @@ function collectLog(player, log){
     if(inventory.pocket == null){
         log.kill()
         inventory.pocket = 'log'
-        socket.emit('logs') //this is not true
+        socket.emit('action', 'get log')
         document.getElementById("pocketlabel").innerHTML = "Pocket: log"
     }else{
         console.log("Pocket not empty.")
@@ -353,7 +356,7 @@ function collectApple(player, apple){
     inventory.apples += 1
     document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Apple collected.")
-    socket.emit('apples', 'more')
+    socket.emit('action', 'get apple')
 }
 
 function collectFish(player, fish){
@@ -361,7 +364,7 @@ function collectFish(player, fish){
     inventory.fish += 1
     document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
     console.log("Fish collected.")
-    socket.emit('fishes', 'more')
+    socket.emit('action', 'get fish')
 }
 
 function spawnApple(x, y){
@@ -394,9 +397,10 @@ function shoot(item){
             apple.body.velocity.x = speed
             apple.body.collideWorldBounds = true
             document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
-            socket.emit('apples', 'less')
+            socket.emit('action', 'shoot apple')
         }else{
             console.log("No apples in inventory")
+            socket.emit('action', 'shoot apple empty')
         }
     } else if (item == 'fish'){
         if(inventory.fish > 0){
@@ -407,9 +411,10 @@ function shoot(item){
             fish.body.velocity.x = speed
             fish.body.collideWorldBounds = true
             document.getElementById("scorelabel").innerHTML = "Apples: " + inventory.apples + ", Fish: " + inventory.fish
-            socket.emit('fishes', 'less')
+            socket.emit('action', 'shoot fish')
         }else{
             console.log("No fish in inventory")
+            socket.emit('action', 'shoot fish empty')
         }
     } else if (item == 'log'){
         if(inventory.pocket == 'log'){
@@ -419,10 +424,11 @@ function shoot(item){
             log.body.velocity.x = speed
             log.body.collideWorldBounds = true
             inventory.pocket = null
-            socket.emit('pocket empty')
+            socket.emit('action', 'shoot log')
             document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
         }else{
             console.log("Pocket empty. Cannot throw log.")
+            socket.emit('action', 'shoot log empty')
         }
     }else if (item == 'rock'){
         if(inventory.pocket == 'rock'){
@@ -432,10 +438,11 @@ function shoot(item){
             rock.body.velocity.x = speed
             rock.body.collideWorldBounds = true
             inventory.pocket = null
-            socket.emit('pocket empty')
+            socket.emit('action', 'shoot rock')
             document.getElementById("pocketlabel").innerHTML = "Pocket: empty"
         }else{
             console.log("Pocket empty. Cannot throw log.")
+            socket.emit('action', 'shoot rock empty')
         }
     }
 }

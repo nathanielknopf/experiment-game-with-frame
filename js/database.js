@@ -13,8 +13,6 @@ var pool = mysql.createPool({
 	debut			: false
 })
 
-var table = 'players' //this will go away soon
-
 var getTimestamp = function(){
 	var date = moment().format().slice(0, 10)
 	var time = moment().format().slice(11, 19)
@@ -45,18 +43,28 @@ var queryThis = function(to_query){
 	})
 }
 
-var createTable = function(name){
-	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '( name VARCHAR(30), ID VARCHAR(30), cond VARCHAR(1), pocket VARCHAR(10), apples INT, fishes INT, access TIMESTAMP)'
+//Things the table needs to have
+//Worker ID (dummy?)
+//Condition
+//Action made
+//Pocket
+//Apples
+//Fish
+//Timestamp
+
+var createTable = function(workerID){
+	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + workerID + '( workerID VARCHAR(30), cond VARCHAR(1), action VARCHAR(30), pocket VARCHAR(10), apples INT, fishes INT, access TIMESTAMP)'
+	// var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + name + '( name VARCHAR(30), ID VARCHAR(30), cond VARCHAR(1), pocket VARCHAR(10), apples INT, fishes INT, access TIMESTAMP)'
 	queryThis(new_table_query)
 }
 
-var addPlayer = function(name, condition, ID){
+var addPlayer = function(workerID, condition){
 	createTable(name) //make new table if it doesn't exist already
-	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "empty", 0, 0,"' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "start experiment", "empty", 0, 0,"' + getTimestamp() + '")')
 }
 
-var updatePlayer = function(name, ID, condition, pocket, apples, fishes){
-	queryThis('INSERT INTO ' + name + ' VALUES("' + name + '", "' + ID + '", "' + condition + '", "' + pocket + '", ' + apples + ', ' + fishes  + ', "' + getTimestamp() + '")')
+var updatePlayer = function(workerID, condition, action, pocket, apples, fishes){
+	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "' + action + '", "' + pocket + '", ' + apples + ', ' + fishes +', "' + getTimestamp() + '")')
 }
 
 module.exports = {

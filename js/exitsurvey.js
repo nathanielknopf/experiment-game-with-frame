@@ -1,3 +1,4 @@
+
 function param( param, use_referrer ) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+param+"=([^&#]*)"; 

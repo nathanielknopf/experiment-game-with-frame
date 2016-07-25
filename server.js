@@ -1,3 +1,4 @@
+
 var express = require('express')
 var app = express()
 var fs = require('fs')
@@ -50,6 +51,20 @@ app.get(/^(.+)$/, function(req, res){
      res.sendFile(__dirname + req.params[0])
  });
 
+//namespace for assigning experiment parameters
+var expnsp = io.of('/experiment-nsp')
+expnsp.on('connection', function(socket){
+
+	var assignCondition = function(){
+		//code for determining the condition of the experiment
+		//for now, assign a constant value
+		var condition = 'a'
+		socket.emit('condition', condition)
+	}
+
+	assignCondition()
+})
+
 var gamensp = io.of('/game-nsp')
 gamensp.on('connection', function(socket){
 
@@ -92,44 +107,34 @@ gamensp.on('connection', function(socket){
 
 	timer(time_to_play)
 
-	var updateDB = function(){
+	var updateDB = function(action){
 		if(use_db){
-			database.updatePlayer(user, socket_id, condition, inventory.pocket, inventory.apples, inventory.fishes)
+			database.updatePlayer(user, condition, action, inventory.pocket, inventory.apples, inventory.fishes)
 		}
 	}
-	
-	socket.on('apples', function(direction){
-		if(direction == 'more'){
+
+	socket.on('action', function(action){
+		if(action == 'get apple'){
 			inventory.apples += 1
-		}else if(direction == 'less'){
+		}else if(action == 'shoot apple'){
 			inventory.apples -= 1
+		}else if(action == 'get fish'){
+			inventory.fish += 1
+		}else if(action == 'shoot fish'){
+			inventory.fish -= 1
+		}else if(action == 'get rock'){
+			inventory.pocket = 'rock'
+		}else if(action == 'shoot rock'){
+			inventory.pocket = 'empty'
+		}else if(action == 'get log'){
+			inventory.pocket = 'log'
+		}else if(action == 'shoot log'){
+			inventory.pocket = 'empty'
 		}
-		updateDB()
-	})
-
-	socket.on('fishes', function(direction){
-		if(direction == 'more'){
-			inventory.fishes += 1
-		}else if(direction == 'less'){
-			inventory.fishes -= 1
+		if(use_db){
+			updateDB(action)
 		}
-		updateDB()
-	})
-
-	socket.on('rocks', function(){
-		inventory.pocket = 'rock'
-		updateDB()
-	})
-
-	socket.on('logs', function(){
-		inventory.pocket = 'log'
-		updateDB()
-	})
-
-	socket.on('pocket empty', function(){
-		inventory.pocket = 'null'
-		updateDB()
-	})
+	});
 })
 
 server.listen(port, function(){
