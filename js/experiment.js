@@ -1,14 +1,15 @@
 var socket = io('/experiment-nsp');
 
-socket.on('condition', function(cond){
-	exp.condition = cond;
+socket.on('condition', function(packet){
+	exp.condition = packet.condition
+	exp.question_order = packet.question_order
 });
 
-function param( param, use_referrer ) { 
+function param( param ) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+param+"=([^&#]*)"; 
     var regex = new RegExp( regexS ); 
-    var tmpURL = use_referrer ? document.referrer : window.location.href
+    var tmpURL = window.location.href
     var results = regex.exec( tmpURL ); 
     console.log("param: " + param + ", URL: " + tmpURL)
     if( results == null ) { 
@@ -42,7 +43,7 @@ function make_slides(f){
 			$(".display_prompt").html("Please click the button below to be redirected to the game.")
 		},
 		button: function(){
-			var destination = '/game.html?condition=' + exp.condition + '&assignmentId=' + exp.assignmentId + '&hitID=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
+			var destination = '/game.html?condition=' + exp.condition + '&qord=' + exp.question_order + '&assignmentId=' + exp.assignmentId + '&hitID=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
 			$(".redirecting").show()
 			setTimeout(function(){
 				window.location.href = destination;
@@ -54,7 +55,6 @@ function make_slides(f){
 }
 
 function init(){
-	exp.condition;
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,
@@ -64,10 +64,10 @@ function init(){
 		screenUW: exp.width
     };
     exp.structure = ["i0", "instructions", "login"];
-    exp.assignmentId = param("assignmentId", false);
-    exp.hitId = param("hitId", false);
-    exp.workerId = param("workerId", false);
-    exp.turkSubmitTo = param("turkSubmitTo", false);
+    exp.assignmentId = param("assignmentId");
+    exp.hitId = param("hitId");
+    exp.workerId = param("workerId");
+    exp.turkSubmitTo = param("turkSubmitTo");
 	console.log("assignmentId: " + exp.assignmentId + " - hitId: " + exp.hitId + " - workerId: " + exp.workerId + " - turkSubmitTo: " + exp.turkSubmitTo);
 	exp.slides = make_slides(exp);
 

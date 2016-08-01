@@ -1,20 +1,14 @@
-
 var express = require('express')
 var app = express()
-var fs = require('fs')
-var vm = require('vm')
 var moment = require('moment')
 
+var fs = require('fs')
+var vm = require('vm')
 vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
+
 var use_db = configs.use_db
 var time_to_play = configs.play_time
-var exit_survey_url = configs.exit_survey_url
-
-var getTimestamp = function(){
-	var date = moment().format().slice(0, 10)
-	var time = moment().format().slice(11, 19)
-	return date + ' ' + time
-}
+var experiments_posted = 0
 
 try {
 	var https = require('https')
@@ -51,15 +45,23 @@ app.get(/^(.+)$/, function(req, res){
      res.sendFile(__dirname + req.params[0])
  });
 
+var getTimestamp = function(){
+	var date = moment().format().slice(0, 10)
+	var time = moment().format().slice(11, 19)
+	return date + ' ' + time
+}
+
 //namespace for assigning experiment parameters
 var expnsp = io.of('/experiment-nsp')
 expnsp.on('connection', function(socket){
 
-	var assignCondition = function(){
+	var assignConditions = function(){
 		//code for determining the condition of the experiment
 		//for now, assign a constant value
-		var condition = 'a'
-		socket.emit('condition', condition)
+		var cond = (experiments_posted % 2 == 0) ? 'a' : 'b'
+		var question_order = (experiments_posted < 6) ? 'q1' : 'q2'
+		socket.emit('condition', {condition: condition, question_order: question_order})
+		experiments_posted += 1
 	}
 
 	assignCondition()
@@ -67,29 +69,22 @@ expnsp.on('connection', function(socket){
 
 var gamensp = io.of('/game-nsp')
 gamensp.on('connection', function(socket){
-
-	//var socket_id = socket.id.slice(2)
-	var socket_id = socket.id
-
-	console.log("Connection from: " + socket_id)
-	console.log(socket_id)
 	
 	var hs = socket.handshake
 	var query = require('url').parse(socket.handshake.headers.referer, true).query
 	var condition = (query.condition) ? query.condition : 'a'
-	var user = (query.workerId) ? query.workerId : 'Undefined'
+	var user = (query.workerId) ? query.workerId : 'undefinedID'
 
-	var inventory = {
-		pocket: 'empty',
-		apples: 0,
-		fishes: 0
-	}
+	var fruit_score = 0
+	var animal_score = 0
+
+	var animal_actions = ['get cow', 'get chicken', 'get sheep', 'get pig']
+	var fruit_actions = ['get apple', 'get grape', 'get pineapple', 'get lemon']
+	
+	var discovered = []
+	var time_points = {}
 
 	console.log("Connection from user: " + user + ".")
-
-	if(use_db){
-		database.addPlayer(user, condition, socket_id)
-	}
 
 	var timer = function(seconds){
 		setTimeout(function(){
@@ -107,34 +102,58 @@ gamensp.on('connection', function(socket){
 
 	timer(time_to_play)
 
-	var updateDB = function(action){
-		if(use_db){
-			database.updatePlayer(user, condition, action, inventory.pocket, inventory.apples, inventory.fishes)
+	if(use_db){
+		database.addPlayer(user, condition)
+	}
+
+	var first_line = '"' + getTimestamp() + '","connected"'
+	fs.writeFile('resultCSVs/' + user + '.csv', first_line, function(err){
+		if(err){
+			console.log(err)
 		}
+	})
+
+	var updateCSV = function(action){
+		var to_append = '"' + getTimestamp() + '","' + action + '"'
+		fs.appendFile('resultCSVs/' + user + '.csv', to_append, function(err){
+			if(err){
+				console.log(err)
+			}
+		})
+	}
+
+	var updateDB = function(action){
+		database.updatePlayer(user, condition, action, fruit_score, animal_score)
 	}
 
 	socket.on('action', function(action){
-		if(action == 'get apple'){
-			inventory.apples += 1
-		}else if(action == 'shoot apple'){
-			inventory.apples -= 1
-		}else if(action == 'get fish'){
-			inventory.fish += 1
-		}else if(action == 'shoot fish'){
-			inventory.fish -= 1
-		}else if(action == 'get rock'){
-			inventory.pocket = 'rock'
-		}else if(action == 'shoot rock'){
-			inventory.pocket = 'empty'
-		}else if(action == 'get log'){
-			inventory.pocket = 'log'
-		}else if(action == 'shoot log'){
-			inventory.pocket = 'empty'
+		console.log(action)
+		if(discovered.indexOf(action) == -1){
+			discovered.push(action)
 		}
+		if(animal_actions.indexOf(action) >= 0){
+			animal_score += 1
+		}else if(fruit_actions.indexOf(action) >= 0){
+			fruit_score += 1
+		}
+		updateCSV(action)
 		if(use_db){
-			updateDB(action)
+			updateDB()
 		}
 	});
+
+	socket.on('discconect', function(){
+		updateCSV('disconnected')
+		discovery_string = 'summary of discoveries\n'
+		for (var i = 0; i < discovered.length; i++){
+			discovery_string += discovered[i] + '\n'
+		}
+		fs.writeFile('resultCSVs/' + user + '-discoveries.txt', discovery_string, function(err){
+			if(err){
+				console.log(err)
+			}
+		})
+	})
 })
 
 server.listen(port, function(){

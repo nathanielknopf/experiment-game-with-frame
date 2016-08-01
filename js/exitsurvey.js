@@ -1,9 +1,9 @@
 
-function param( param, use_referrer ) { 
+function param(param) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+param+"=([^&#]*)"; 
     var regex = new RegExp( regexS ); 
-    var tmpURL = use_referrer ? document.referrer : window.location.href
+    var tmpURL = window.location.href
     var results = regex.exec( tmpURL ); 
     console.log("param: " + param + ", URL: " + tmpURL)
     if( results == null ) { 
@@ -16,19 +16,39 @@ function param( param, use_referrer ) {
 function make_slides(f){
 	var slides = {}
 
-	slides.response = slide({
-		name: "response",
+	slides.question_one = slide({
+		name: "question_one",
 		start: function(){
 			exp.startT = Date.now()
 			$(".err").hide()
-			$(".prompt_one").html("You've just explored the world of Lurekon. The next Turker who plays this game will complete a task in a world like Lurekon, but they will have <b>less time</b> to complete their task. Help them score points by <b>sharing with them what you've learned</b>")
+			var question = (exp.question_order == 'q1') ? exp.questions[0] : exp.questions[1]
+			$(".prompt").html(question)
 		},
 		button: function(){
 			response_one = $("#response_one").val()
 			if(response_one.length == 0){
 				$(".err").show()
 			}else{
-				exp.response = response_one
+				exp.response_one = response_one
+				exp.go()
+			}
+		}
+	})
+
+	slides.question_two = slide({
+		name: "question_two",
+		start: function(){
+			exp.startT = Date.now()
+			$(".err").hide()
+			var question = (exp.question_order == 'q1') ? exp.questions[1] : exp.questions[0]
+			$(".prompt").html(question)
+		},
+		button: function(){
+			response_two = $("#response_two").val()
+			if(response_two.length == 0){
+				$(".err").show()
+			}else{
+				exp.response_two = response_two
 				exp.go()
 			}
 		}
@@ -58,7 +78,9 @@ function make_slides(f){
 			exp.data= {
          		"system" : exp.system,
          		"condition" : exp.condition,
-         		"response" : exp.response,
+         		"question order" : exp.question_order,
+         		"response one" : exp.response_one,
+         		"response two" : exp.response_two,
          		"subject_information": exp.subj_data
     		};
 			setTimeout(function() {
@@ -71,9 +93,12 @@ function make_slides(f){
 }
 
 function init(){
-    exp.user = param('workerId', false)
-    exp.condition = param('condition', false)
-	exp.response = ''
+	exp.questions = ["First question?", "Second question?"]
+    exp.user = (param('workerId') == '') ? 'undefined' : param('workerId')
+    exp.condition = (param('condition') == '') ? 'a' : param('condition')
+    exp.question_order = (param('qord') == '') ? 'q1' : param('qord') //'q1' or 'q2'
+	exp.response_one = ''
+	exp.response_two = ''
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,
@@ -82,12 +107,9 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     }
-    exp.structure = ["response", "subj_info", "thanks"]
+    exp.structure = ["question_one", "question_two", "subj_info", "thanks"]
 
 	exp.slides = make_slides(exp);
-
-	// exp.nQs = utils.get_exp_length(); //this does not work if there are stacks of stims (but does work for an experiment with this structure)
- //                    //relies on structure and slides being defined
 
 	$('.slide').hide(); //hide everything
 
