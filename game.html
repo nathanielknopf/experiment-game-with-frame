@@ -293,6 +293,7 @@ function update() {
 
 function treeCollision(rock, tree){
     console.log("Tree collision")
+    socket.emit('action', 'shoot ' + tree.key)
     rock.kill()
     for (var i = 0; i < trees.children.length; i++){
         if(trees.children[i].body.position.x == tree.x && trees.children[i].body.position.y == tree.y){
@@ -318,6 +319,7 @@ function treeCollision(rock, tree){
 
 function mountainCollision(rock, mountain){
     console.log("Mountain collision")
+    socket.emit('action', 'shoot ' + mountain.key)
     rock.kill()
     for (var i = 0; i < mountains.children.length; i++){
         if(mountains.children[i].body.position.x == mountain.x && mountains.children[i].body.position.y == mountain.y){
@@ -419,30 +421,6 @@ function collectAnimal(player, animal){
 <div class="info-box"><h3>Pocket<img id="pocket-label" src="assets/empty.png" align="right" onclick="shootPocket()" style="margin:3px;width:30px;height:30px;"></h3></div>
 <div class="info-box"><h3 id="fruit-label">Fruits: 0</h3></div>
 <div class="info-box"><h3 id="animal-label">Animals: 0</h3></div>
-<!-- <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3> -->
-<div class="fixed">
-    <table>
-        <tr>
-            <th>Object</th>
-            <th>Points</th>
-        </tr>
-        <tr>
-            <td>Rock</td>
-            <td>0 points</td>
-        </tr>
-        <tr>
-            <td>Log</td>
-            <td>0 points</td>
-        </tr>
-        <tr>
-            <td>Apple</td>
-            <td>1 points</td>
-        </tr>
-        <tr>
-            <td>Fish</td>
-            <td>2 points</td>
-        </tr>
-    </table>
-</div>
+
 </body>
 </html>
