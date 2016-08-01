@@ -47,7 +47,7 @@ function make_slides(f){
 			$(".redirecting").show()
 			setTimeout(function(){
 				window.location.href = destination;
-			}, 1000)
+			}, 500)
 		}
 	});
 

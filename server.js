@@ -96,6 +96,7 @@ gamensp.on('connection', function(socket){
 				var destination = '/exitsurvey.html'
 				socket.emit('redirect', destination)
 				console.log("Redirecting " + user + ".")
+
 				discovery_string = 'summary of discoveries\n'
 				for (var i = 0; i < discovered.length; i++){
 					discovery_string += discovered[i] + '\n'
@@ -105,6 +106,17 @@ gamensp.on('connection', function(socket){
 						console.log(err)
 					}
 				})
+
+				score_string = '"time","points"\n'
+				for (var i = 0; i < time_points.length; i++){
+					score_string += '"' + time_points[i].time + '","' + time_points[i].score + '"\n'
+				}
+				fs.writeFile('resultCSVs/' + user + '-scores.csv', score_string, function(err){
+					if(err){
+						console.log(err)
+					}
+				})
+
 			}
 		}, 1000)
 	}
