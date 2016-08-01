@@ -362,6 +362,7 @@ function collectRock(player, rock){
         rock.kill()
         pocket = 'rock'
         document.getElementById("pocket-label").src = 'assets/rock.png'
+	socket.emit('action', 'get rock')
     }
 }
 
@@ -410,12 +411,13 @@ function collectAnimal(player, animal){
     socket.emit('action', 'get ' + animal.key)
     animal.kill()
     animal_score += 1
+    console.log("Animal score: " + animal_score)
     document.getElementById("animal-label").innerHMTL = "Animals: " + animal_score
 }
 
 </script>
 <div class="info-box"><h3>Pocket<img id="pocket-label" src="assets/empty.png" align="right" onclick="shootPocket()" style="margin:3px;width:30px;height:30px;"></h3></div>
-<div class="info-box"><h3 id="fruit-label">Fruit: 0</h3></div>
+<div class="info-box"><h3 id="fruit-label">Fruits: 0</h3></div>
 <div class="info-box"><h3 id="animal-label">Animals: 0</h3></div>
 <!-- <h3 class="smallspace" id="pocketlabel">Pocket: empty</h3> -->
 <div class="fixed">

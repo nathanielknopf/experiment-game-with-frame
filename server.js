@@ -58,13 +58,13 @@ expnsp.on('connection', function(socket){
 	var assignConditions = function(){
 		//code for determining the condition of the experiment
 		//for now, assign a constant value
-		var cond = (experiments_posted % 2 == 0) ? 'a' : 'b'
+		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b'
 		var question_order = (experiments_posted < 6) ? 'q1' : 'q2'
 		socket.emit('condition', {condition: condition, question_order: question_order})
 		experiments_posted += 1
 	}
 
-	assignCondition()
+	assignConditions()
 })
 
 var gamensp = io.of('/game-nsp')
