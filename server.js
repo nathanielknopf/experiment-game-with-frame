@@ -82,7 +82,7 @@ gamensp.on('connection', function(socket){
 	var fruit_actions = ['get apple', 'get grape', 'get pineapple', 'get lemon']
 	
 	var discovered = []
-	var time_points = {}
+	var time_points = []
 
 	console.log("Connection from user: " + user + ".")
 
@@ -96,6 +96,15 @@ gamensp.on('connection', function(socket){
 				var destination = '/exitsurvey.html'
 				socket.emit('redirect', destination)
 				console.log("Redirecting " + user + ".")
+				discovery_string = 'summary of discoveries\n'
+				for (var i = 0; i < discovered.length; i++){
+					discovery_string += discovered[i] + '\n'
+				}
+				fs.writeFile('resultCSVs/' + user + '-discoveries.txt', discovery_string, function(err){
+					if(err){
+						console.log(err)
+					}
+				})
 			}
 		}, 1000)
 	}
@@ -106,7 +115,7 @@ gamensp.on('connection', function(socket){
 		database.addPlayer(user, condition)
 	}
 
-	var first_line = '"' + getTimestamp() + '","connected"'
+	var first_line = '"' + getTimestamp() + '","connected"\n'
 	fs.writeFile('resultCSVs/' + user + '.csv', first_line, function(err){
 		if(err){
 			console.log(err)
@@ -114,7 +123,7 @@ gamensp.on('connection', function(socket){
 	})
 
 	var updateCSV = function(action){
-		var to_append = '"' + getTimestamp() + '","' + action + '"'
+		var to_append = '"' + getTimestamp() + '","' + action + '"\n'
 		fs.appendFile('resultCSVs/' + user + '.csv', to_append, function(err){
 			if(err){
 				console.log(err)
@@ -133,27 +142,16 @@ gamensp.on('connection', function(socket){
 		}
 		if(animal_actions.indexOf(action) >= 0){
 			animal_score += 1
+			time_points.push({time:getTimestamp(), score:animal_score + fruit_score})
 		}else if(fruit_actions.indexOf(action) >= 0){
 			fruit_score += 1
+			time_points.push({time:getTimestamp(), score:animal_score + fruit_score})
 		}
 		updateCSV(action)
 		if(use_db){
 			updateDB()
 		}
 	});
-
-	socket.on('discconect', function(){
-		updateCSV('disconnected')
-		discovery_string = 'summary of discoveries\n'
-		for (var i = 0; i < discovered.length; i++){
-			discovery_string += discovered[i] + '\n'
-		}
-		fs.writeFile('resultCSVs/' + user + '-discoveries.txt', discovery_string, function(err){
-			if(err){
-				console.log(err)
-			}
-		})
-	})
 })
 
 server.listen(port, function(){

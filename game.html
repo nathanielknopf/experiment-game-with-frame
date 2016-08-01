@@ -119,7 +119,7 @@ var mountain_animal_pairings = {
     'blue mountain': 'pig'
 }
 
-var mountain_list = [{x:500, y:850, color:'red mountain'}, {x:1200, y:740, color:'green mountain'}, {x:700, y:750, color:'brown mountain'}, {x:60, y:150, color: 'red mountain'}, {x:1200, y:500, color:'blue mountain'}, {x:750, y:950, color:'green mountain'},{x:1100, y:850, color:'brown mountain'}, {x:400, y:1000, color:'red mountain'}, {x:200, y:300, color:'blue mountain'}, {x:60, y:800, color: 'green mountain'}, {x:500, y:250, color: 'brown mountain'}, {x:850, y:640, color: 'blue mountain'}]
+var mountain_list = [{x:500, y:850, color:'red mountain'}, {x:1200, y:740, color:'green mountain'}, {x:700, y:750, color:'brown mountain'}, {x:10, y:150, color: 'red mountain'}, {x:1200, y:500, color:'blue mountain'}, {x:750, y:950, color:'green mountain'},{x:1100, y:850, color:'brown mountain'}, {x:400, y:1000, color:'red mountain'}, {x:200, y:300, color:'blue mountain'}, {x:60, y:800, color: 'green mountain'}, {x:500, y:250, color: 'brown mountain'}, {x:850, y:640, color: 'blue mountain'}]
 
 var rock_list = [{x:100, y:0}, {x:400, y:30}, {x:180, y:150}, {x:320, y:180}, {x:400, y:400}, {x:30, y:1000}, {x:250, y:880}, {x:500, y:650}, {x:60, y:550}, {x:680, y:1000}, {x:200, y:740}, {x:700, y:400}, {x:870, y:30}, {x:1100, y:100}, {x:870, y:320}, {x:1050, y:480}, {x:1200, y:420}, {x:800, y:520}, {x:1400, y:340}, {x:1350, y:970}, {x:900, y:980}, {x:1050, y:750}, {x:1300, y:650}, {x:1150, y:1020}]
 
@@ -412,7 +412,7 @@ function collectAnimal(player, animal){
     animal.kill()
     animal_score += 1
     console.log("Animal score: " + animal_score)
-    document.getElementById("animal-label").innerHMTL = "Animals: " + animal_score
+    document.getElementById("animal-label").innerHTML = "Animals: " + animal_score
 }
 
 </script>
