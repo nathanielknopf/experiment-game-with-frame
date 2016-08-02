@@ -12,28 +12,28 @@
         }
     </style>
     <style>
-        h3.smallspace {
-            line-height: 0.8
-        }
-        div.fixed {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 150px;
-        }
-        .info-box {
+        .inventory-box {
             display: inline-block;
-            width: 100px;
-            height: 80px;
-            /*margin: 5px;*/
+            width: 540px;
+            height: 100px;
             border: 3px solid #000000;
         }
-        table, th, td {
-            border: 1px solid black;
-            width: 150px;
+        .pocket-image {
+            display: inline-block;
+            width: 40px;
+            height: 90px;
+            margin: 3px;
+        }
+        p.counter-label {
+            font-size: 1.25em;
+            font-family: "Arial";
+        }
+        p.score-label{
+            font-size: 1.5em;
+            font-family: "Arial";
         }
     </style>
-    <h3 class="smallspace" id="timelabel">Time remaining:</h3>
+    <h3 id="timelabel">Time remaining:</h3>
 </head>
 <body>
 
@@ -79,6 +79,21 @@ var game = new Phaser.Game(720, 540, Phaser.CANVAS, '', { preload: preload, crea
 var player
 var facing = 'right'
 var cursors
+var score = 0
+var pocket = {
+    rock: 0,
+    apple: 0,
+    lemon: 0,
+    grape: 0,
+    cow: 0,
+    chicken: 0,
+    pig: 0,
+    fish: 0,
+    whale: 0,
+    crab: 0
+}
+
+var rocks
 
 var trees
 var apples
@@ -92,16 +107,20 @@ var sheeps
 var chickens
 var pigs
 
-var rocks
-
-var fruit_score = 0
-var animal_score = 0
-var pocket = 'empty'
-
-var spacebar
-var spacebar_pressed
+var ponds
+var fishes
+var whales
+var crabs
 
 var condition = (param("condition") == "") ? "a" : param("condition")
+
+var pond_aquatic_pairings = {
+    'red pond': 'fish',
+    'green pond': 'whale',
+    'blue pond': 'crab'
+}
+
+var pond_list = [{x:1300, y:60, color: 'red pond'}, {x:900, y: 750, color:'green pond'}, {x:1200, y:250, color: 'blue pond'}, {x:500, y:850, color:'red pond'}, {x:10, y:150, color: 'green pond'}, {x:400, y:1000, color:'blue pond'}]
 
 var tree_fruit_pairings = {
     'green tree': 'apple',
@@ -110,41 +129,46 @@ var tree_fruit_pairings = {
     'purple tree': 'lemon'
 }
 
-var tree_list = [{x:1300, y:60, color: 'red tree'}, {x:720, y:500, color:'green tree'}, {x:900, y: 750, color:'red tree'}, {x:100, y:1000, color:'purple tree'}, {x:370, y:800, color:'blue tree'}, {x:250, y:620, color: 'green tree'}, {x:300, y:500, color:'purple tree'},{x:480, y:140, color: 'blue tree'}, {x:20, y:400, color: 'blue tree'}, {x:700, y:190, color: 'purple tree'}, {x:1200, y:250, color: 'red tree'}, {x:1000, y:300, color: 'green tree'}]
+var tree_list = [{x:720, y:500, color:'green tree'}, {x:100, y:1000, color:'purple tree'}, {x:370, y:800, color:'blue tree'}, {x:250, y:620, color: 'green tree'}, {x:300, y:500, color:'purple tree'},{x:480, y:140, color: 'blue tree'}, {x:20, y:400, color: 'blue tree'}, {x:700, y:190, color: 'purple tree'}, {x:1000, y:300, color: 'green tree'}]
 
 var mountain_animal_pairings = {
     'brown mountain': 'cow',
-    'red mountain': 'sheep',
     'green mountain': 'chicken',
     'blue mountain': 'pig'
 }
 
-var mountain_list = [{x:500, y:850, color:'red mountain'}, {x:1200, y:740, color:'green mountain'}, {x:700, y:750, color:'brown mountain'}, {x:10, y:150, color: 'red mountain'}, {x:1200, y:500, color:'blue mountain'}, {x:750, y:950, color:'green mountain'},{x:1100, y:850, color:'brown mountain'}, {x:400, y:1000, color:'red mountain'}, {x:200, y:300, color:'blue mountain'}, {x:60, y:800, color: 'green mountain'}, {x:500, y:250, color: 'brown mountain'}, {x:850, y:640, color: 'blue mountain'}]
+var mountain_list = [{x:1200, y:740, color:'green mountain'}, {x:700, y:750, color:'brown mountain'}, {x:1200, y:500, color:'blue mountain'}, {x:750, y:950, color:'green mountain'},{x:1100, y:850, color:'brown mountain'}, {x:200, y:300, color:'blue mountain'}, {x:60, y:800, color: 'green mountain'}, {x:500, y:250, color: 'brown mountain'}, {x:850, y:640, color: 'blue mountain'}]
 
 var rock_list = [{x:100, y:0}, {x:400, y:30}, {x:180, y:150}, {x:320, y:180}, {x:400, y:400}, {x:30, y:1000}, {x:250, y:880}, {x:500, y:650}, {x:60, y:550}, {x:680, y:1000}, {x:200, y:740}, {x:700, y:400}, {x:870, y:30}, {x:1100, y:100}, {x:870, y:320}, {x:1050, y:480}, {x:1200, y:420}, {x:800, y:520}, {x:1400, y:340}, {x:1350, y:970}, {x:900, y:980}, {x:1050, y:750}, {x:1300, y:650}, {x:1150, y:1020}]
+
+var scoring_objects = ['apple', 'grape', 'lemon', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
+var pocket_objects = ['rock', 'apple', 'lemon', 'grape', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
 
 function preload() {
     game.load.image('background', 'assets/background.png')
     game.load.image('player', 'assets/player.png')
     game.load.image('rock', 'assets/rock.png')
 
-    game.load.image('red tree', 'assets/tree-red.png')
     game.load.image('blue tree', 'assets/tree-blue.png')
     game.load.image('green tree', 'assets/tree-green.png')
     game.load.image('purple tree', 'assets/tree-purple.png')
     game.load.image('apple', 'assets/apple.png')
     game.load.image('lemon', 'assets/lemon.png')
     game.load.image('grape', 'assets/grape.png')
-    game.load.image('pineapple', 'assets/pineapple.png')
-
+    
     game.load.image('brown mountain', 'assets/mountains-brown.png')
-    game.load.image('red mountain', 'assets/mountains-red.png')
     game.load.image('green mountain', 'assets/mountains-green.png')
     game.load.image('blue mountain', 'assets/mountains-blue.png')
     game.load.image('cow', 'assets/cow.png')
-    game.load.image('sheep', 'assets/sheep.png')
     game.load.image('chicken', 'assets/chicken.png')
     game.load.image('pig', 'assets/pig.png')
+
+    game.load.image('blue pond', 'assets/pond-blue.png')
+    game.load.image('red pond', 'assets/pond-red.png')
+    game.load.image('green pond', 'assets/pond-green.png')
+    game.load.image('fish', 'assets/fish.png')
+    game.load.image('whale', 'assets/whale.png')
+    game.load.image('crab', 'assets/crab.png')
 }
 
 
@@ -155,8 +179,6 @@ function create() {
     game.world.setBounds(0, 0, 1440, 1080)
 
     cursors = game.input.keyboard.createCursorKeys()
-
-    spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
 
     trees = game.add.group()
     trees.enableBody = true
@@ -211,6 +233,28 @@ function create() {
     pigs = game.add.group()
     pigs.enableBody = true
 
+    ponds = game.add.group()
+    ponds.enableBody = true
+
+    for (var i = 0; i < pond_list.length; i++){
+        var pond = ponds.create(pond_list[i].x, pond_list[i].y, pond_list[i].color)
+        pond.body.immovable = true
+    }
+
+    for (var i = 0; i < ponds.children.length; i++){
+        ponds.children[i].canSpawnAquatic = true
+        ponds.children[i].colorOfThisPond = pond_list[i].color
+    }
+
+    fishes = game.add.group()
+    fishes.enableBody = true
+
+    whales = game.add.group()
+    whales.enableBody = true
+
+    crabs = game.add.group()
+    crabs.enableBody = true
+
     rocks = game.add.group()
     rocks.enableBody = true
 
@@ -228,24 +272,62 @@ function create() {
 
 function update() {
 
-    game.physics.arcade.overlap(player, rocks, collectRock, null, this)
-    game.physics.arcade.collide(rocks, rocks) //?
+    game.physics.arcade.overlap(player, rocks, collectItem, null, this)
+    game.physics.arcade.collide(rocks, rocks)
+    game.physics.arcade.collide(rocks, apples)
+    game.physics.arcade.collide(rocks, lemons)
+    game.physics.arcade.collide(rocks, grapes)
+    game.physics.arcade.collide(rocks, cows)
+    game.physics.arcade.collide(rocks, chickens)
+    game.physics.arcade.collide(rocks, pigs)
 
     game.physics.arcade.collide(player, trees)
-    game.physics.arcade.collide(rocks, trees, treeCollision, null, this)
+    game.physics.arcade.overlap(rocks, trees, treeCollision, null, this)
 
-    game.physics.arcade.overlap(player, apples, collectFruit, null, this)
-    game.physics.arcade.overlap(player, pineapples, collectFruit, null, this)
-    game.physics.arcade.overlap(player, grapes, collectFruit, null, this)
-    game.physics.arcade.overlap(player, lemons, collectFruit, null, this)
+    game.physics.arcade.overlap(player, apples, collectItem, null, this)
+    game.physics.arcade.overlap(player, grapes, collectItem, null, this)
+    game.physics.arcade.overlap(player, lemons, collectItem, null, this)
+    game.physics.arcade.collide(apples, trees)
+    game.physics.arcade.collide(apples, mountains)
+    game.physics.arcade.collide(apples, ponds)
+    game.physics.arcade.collide(lemons, trees)
+    game.physics.arcade.collide(lemons, mountains)
+    game.physics.arcade.collide(lemons, ponds)
+    game.physics.arcade.collide(grapes, trees)
+    game.physics.arcade.collide(grapes, mountains)
+    game.physics.arcade.collide(grapes, ponds)
 
     game.physics.arcade.collide(player, mountains)
-    game.physics.arcade.collide(rocks, mountains, mountainCollision, null, this)
+    game.physics.arcade.overlap(rocks, mountains, mountainCollision, null, this)
 
-    game.physics.arcade.overlap(player, cows, collectAnimal, null, this)
-    game.physics.arcade.overlap(player, sheeps, collectAnimal, null, this)
-    game.physics.arcade.overlap(player, chickens, collectAnimal, null, this)
-    game.physics.arcade.overlap(player, pigs, collectAnimal, null, this)
+    game.physics.arcade.overlap(player, cows, collectItem, null, this)
+    game.physics.arcade.overlap(player, chickens, collectItem, null, this)
+    game.physics.arcade.overlap(player, pigs, collectItem, null, this)
+    game.physics.arcade.collide(cows, trees)
+    game.physics.arcade.collide(cows, mountains)
+    game.physics.arcade.collide(cows, ponds)
+    game.physics.arcade.collide(chickens, trees)
+    game.physics.arcade.collide(chickens, mountains)
+    game.physics.arcade.collide(chickens, ponds)
+    game.physics.arcade.collide(pigs, trees)
+    game.physics.arcade.collide(pigs, mountains)
+    game.physics.arcade.collide(pigs, ponds)
+
+    game.physics.arcade.collide(player, ponds)
+    game.physics.arcade.overlap(rocks, ponds, pondCollision, null, this)
+
+    game.physics.arcade.overlap(player, fishes, collectItem, null, this)
+    game.physics.arcade.overlap(player, whales, collectItem, null, this)
+    game.physics.arcade.overlap(player, crabs, collectItem, null, this)
+    game.physics.arcade.collide(fishes, trees)
+    game.physics.arcade.collide(fishes, mountains)
+    game.physics.arcade.collide(fishes, ponds)
+    game.physics.arcade.collide(whales, trees)
+    game.physics.arcade.collide(whales, mountains)
+    game.physics.arcade.collide(whales, ponds)
+    game.physics.arcade.collide(crabs, trees)
+    game.physics.arcade.collide(crabs, mountains)
+    game.physics.arcade.collide(crabs, ponds)
 
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0
@@ -282,13 +364,6 @@ function update() {
     } else {
     	player.body.velocity.y = 0
     }
-
-    if(spacebar.isDown && !spacebar_pressed){
-        spacebar_pressed = true
-        shakeObject()
-    }else if(spacebar.isUp && spacebar_pressed){
-        spacebar_pressed = false
-    }
 }
 
 function treeCollision(rock, tree){
@@ -309,8 +384,8 @@ function treeCollision(rock, tree){
             }, 15)
             if(trees.children[i].canSpawnFruit){
                 var color = trees.children[i].colorOfThisTree
-                var fruit = (condition == 'a') ? tree_fruit_pairings[color] : ['apple', 'lemon', 'grape', 'pineapple'][Math.floor(Math.random()*4)]
-                spawnFruit(fruit, tree)
+                var fruit = (condition == 'a') ? tree_fruit_pairings[color] : ['apple', 'lemon', 'grape'][Math.floor(Math.random()*3)]
+                spawnObject(fruit, tree.x, tree.y+60)
                 trees.children[i].canSpawnFruit = false
             }
         }
@@ -335,92 +410,147 @@ function mountainCollision(rock, mountain){
             }, 15)
             if(mountains.children[i].canSpawnAnimal){
                 var color = mountains.children[i].colorOfThisMountain
-                var animal = (condition == 'a') ? mountain_animal_pairings[color] : ['cow', 'sheep', 'chicken', 'pig'][Math.floor(Math.random()*4)]
-                spawnAnimal(animal, mountain)
+                var animal = (condition == 'a') ? mountain_animal_pairings[color] : ['cow', 'chicken', 'pig'][Math.floor(Math.random()*3)]
+                spawnObject(animal, mountain.x, mountain.y+40)
                 mountains.children[i].canSpawnAnimal = false
             }
         }
     }
 }
 
-function shootPocket(){
-    if (pocket == 'rock'){
+function pondCollision(rock, pond){
+    console.log("Pond collision")
+    socket.emit('action', 'shoot ' + pond.key)
+    rock.kill()
+    for (var i = 0; i < ponds.children.length; i++){
+        if(ponds.children[i].body.position.x == pond.x && ponds.children[i].body.position.y == pond.y){
+            pond.x += 5
+            setTimeout(function(){
+                pond.x -= 5
+            }, 5)
+            setTimeout(function(){
+                pond.x += 5
+            }, 10)
+            setTimeout(function(){
+                pond.x -= 5
+            }, 15)
+            if(ponds.children[i].canSpawnAquatic){
+                var color = ponds.children[i].colorOfThisPond
+                var aquatic = (condition == 'a') ? pond_aquatic_pairings[color] : ['fish', 'whale', 'crab'][Math.floor(Math.random()*3)]
+                spawnObject(aquatic, pond.x, pond.y+40)
+                ponds.children[i].canSpawnAquatic = false
+            }
+        }
+    }
+}
+
+function shootPocket(to_shoot){
+    if(pocket[to_shoot] > 0){
+        console.log("Shooting " + to_shoot)
+        socket.emit('action', 'shoot ' + to_shoot)
+        pocket[to_shoot] -= 1
         var speed = (facing == 'right') ? 350 : -350
-        var offset = (facing == 'right') ? 30 : -55
-        var rock = rocks.create(player.x+offset, player.y, 'rock')
-        rock.body.velocity.x = speed
-        rock.body.collideWorldBounds = true
-        socket.emit('action', 'shoot rock')
-        pocket = 'empty'
-        document.getElementById("pocket-label").src = 'assets/empty.png'
+        var offset = (facing == 'right') ? 30 : -80
+        var item
+        if(to_shoot == 'rock'){
+            item = rocks.create(player.x+offset, player.y, 'rock')
+        }else if(to_shoot == 'apple'){
+            item = apples.create(player.x+offset, player.y, 'apple')
+        }else if(to_shoot == 'lemon'){
+            item = lemons.create(player.x+offset, player.y, 'lemon')
+        }else if(to_shoot == 'grape'){
+            item = grapes.create(player.x+offset, player.y, 'grape')
+        }else if(to_shoot == 'cow'){
+            item = cows.create(player.x+offset, player.y, 'cow')
+        }else if(to_shoot == 'chicken'){
+            item = chickens.create(player.x+offset, player.y, 'chicken')
+        }else if(to_shoot == 'pig'){
+            item = pigs.create(player.x+offset, player.y, 'pig')
+        }else if(to_shoot == 'fish'){
+            item = fishes.create(player.x+offset, player.y, 'fish')
+        }else if(to_shoot == 'whale'){
+            item = whales.create(player.x+offset, player.y, 'whale')
+        }else if(to_shoot == 'crab'){
+            item = crabs.create(player.x+offset, player.y, 'crab')
+        }
+        item.body.velocity.x = speed
+        item.body.collideWorldBounds = true
+        if(scoring_objects.indexOf(to_shoot) >= 0){
+            score -= 1
+        }
+        updatePocket()
+        //throw the item
     }else{
-        console.log("Pocket empty, cannot throw")
-        socket.emit('action', 'shoot empty pocket')
+        console.log("Pocket devoid of " + item)
+        socket.emit('action', 'shoot empty ' + item)
     }
 }
 
-function collectRock(player, rock){
-    if (pocket == 'empty'){
-        rock.kill()
-        pocket = 'rock'
-        document.getElementById("pocket-label").src = 'assets/rock.png'
-	socket.emit('action', 'get rock')
-    }
-}
-
-function spawnFruit(fruit, tree){
-    var x = tree.x
-    var y = (tree.body.touching.down) ? tree.y-40 : tree.y+60
+function spawnObject(object, x, y){
     setTimeout(function(){
-        if (fruit == 'apple'){
+        if(object == 'apple'){
             var apple = apples.create(x, y, 'apple')
-        }else if(fruit == 'lemon'){
+        }else if(object == 'lemon'){
             var lemon = lemons.create(x, y, 'lemon')
-        }else if(fruit == 'grape'){
+        }else if(object == 'grape'){
             var grape = grapes.create(x, y, 'grape')
-        }else if(fruit == 'pineapple'){
-            var pineapple = pineapples.create(x, y, 'pineapple')
-        }
-    })
-}
-
-function spawnAnimal(animal, mountain){
-    var x = mountain.x
-    var y = (mountain.body.touching.down) ? mountain.y-40 : mountain.y+60
-    setTimeout(function(){
-        if (animal == 'cow'){
+        }else if(object == 'cow'){
             var cow = cows.create(x, y, 'cow')
-        }else if(animal == 'sheep'){
-            var sheep = sheeps.create(x, y, 'sheep')
-        }else if(animal == 'chicken'){
+        }else if(object == 'chicken'){
             var chicken = chickens.create(x, y, 'chicken')
-        }else if(animal == 'pig'){
+        }else if(object == 'pig'){
             var pig = pigs.create(x, y, 'pig')
+        }else if(object == 'fish'){
+            var fish = fishes.create(x, y, 'fish')
+        }else if(object == 'whale'){
+            var whale = whales.create(x, y, 'whale')
+        }else if(object == 'crab'){
+            var crab = crabs.create(x, y, 'crab')
         }
-    })
+    }, 50)
 }
 
-function collectFruit(player, fruit){
-    console.log("collected: " + fruit.key)
-    socket.emit('action', 'get ' + fruit.key)
-    fruit.kill()
-    fruit_score += 1
-    document.getElementById("fruit-label").innerHTML = "Fruits: " + fruit_score
+function updatePocket(){
+    for(var i = 0; i < pocket_objects.length; i++){
+        var object = pocket_objects[i]
+        var photo_id = object + '-pic'
+        var label_id = object + '-num'
+        document.getElementById('score').innerHTML = "Score: " + score
+        if (pocket[object] > 0){
+            document.getElementById(photo_id).src = 'assets/' + object + '.png'
+            document.getElementById(label_id).innerHTML = pocket[object]
+        }else{
+            document.getElementById(photo_id).src = 'assets/empty.png'
+            document.getElementById(label_id).innerHTML = ''
+        }
+    }
 }
 
-function collectAnimal(player, animal){
-    console.log("collected: " + animal.key)
-    socket.emit('action', 'get ' + animal.key)
-    animal.kill()
-    animal_score += 1
-    console.log("Animal score: " + animal_score)
-    document.getElementById("animal-label").innerHTML = "Animals: " + animal_score
+function collectItem(player, item){
+    console.log("Collected: " + item.key)
+    socket.emit('action', 'get ' + item.key)
+    item.kill()
+    if(scoring_objects.indexOf(item.key) >= 0){
+        score += 1
+    }
+    pocket[item.key] += 1
+    updatePocket()
 }
 
 </script>
-<div class="info-box"><h3>Pocket<img id="pocket-label" src="assets/empty.png" align="right" onclick="shootPocket()" style="margin:3px;width:30px;height:30px;"></h3></div>
-<div class="info-box"><h3 id="fruit-label">Fruits: 0</h3></div>
-<div class="info-box"><h3 id="animal-label">Animals: 0</h3></div>
+<h2 id="score" align="left">Score: 0</h2>
+<div class="inventory-box">
+    <div class="pocket-image"><img id="rock-pic" src="assets/empty.png" onclick="shootPocket('rock')" style="width:40px;height:40px;"><p class="counter-label" id="rock-num" align="center"></p></div>
+    <div class="pocket-image"><img id="apple-pic" src="assets/empty.png" onclick="shootPocket('apple')" style="width:40px;height:40px;"><p class="counter-label" id="apple-num" align="center"></p></div>
+    <div class="pocket-image"><img id="lemon-pic" src="assets/empty.png" onclick="shootPocket('lemon')" style="width:40px;height:40px;"><p class="counter-label" id="lemon-num" align="center"></p></div>
+    <div class="pocket-image"><img id="grape-pic" src="assets/empty.png" onclick="shootPocket('grape')" style="width:40px;height:40px;"><p class="counter-label" id="grape-num" align="center"></p></div>
+    <div class="pocket-image"><img id="cow-pic" src="assets/empty.png" onclick="shootPocket('cow')" style="width:40px;height:40px;"><p class="counter-label" id="cow-num" align="center"></p></div>
+    <div class="pocket-image"><img id="chicken-pic" src="assets/empty.png" onclick="shootPocket('chicken')" style="width:40px;height:40px;"><p class="counter-label" id="chicken-num" align="center"></p></div>
+    <div class="pocket-image"><img id="pig-pic" src="assets/empty.png" onclick="shootPocket('pig')" style="width:40px;height:40px;"><p class="counter-label" id="pig-num" align="center"></p></div>
+    <div class="pocket-image"><img id="fish-pic" src="assets/empty.png" onclick="shootPocket('fish')" style="width:40px;height:40px;"><p class="counter-label" id="fish-num" align="center"></p></div>
+    <div class="pocket-image"><img id="whale-pic" src="assets/empty.png" onclick="shootPocket('whale')" style="width:40px;height:40px;"><p class="counter-label" id="whale-num" align="center"></p></div>
+    <div class="pocket-image"><img id="crab-pic" src="assets/empty.png" onclick="shootPocket('crab')" style="width:40px;height:40px;"><p class="counter-label" id="crab-num" align="center"></p></div>
+</div>
 
 </body>
 </html>
