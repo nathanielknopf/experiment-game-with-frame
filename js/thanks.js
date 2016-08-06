@@ -1,3 +1,9 @@
+// var socket = io('survey-nsp')
+// socket.emit('request', param("workerId"))
+
+// socket.on('responses', function(responses_packet){
+// 	exp.responses = responses_packet.responses
+// })
 
 function param(param) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -16,42 +22,6 @@ function param(param) {
 function make_slides(f){
 	var slides = {}
 
-	slides.question_one = slide({
-		name: "question_one",
-		start: function(){
-			$(".err").hide()
-			var question = (exp.question_order == 'q1') ? exp.questions[0] : exp.questions[1]
-			$(".prompt").html(question)
-		},
-		button: function(){
-			response_one = $("#response_one").val()
-			if(response_one.length == 0){
-				$(".err").show()
-			}else{
-				exp.response_one = response_one
-				exp.go()
-			}
-		}
-	})
-
-	slides.question_two = slide({
-		name: "question_two",
-		start: function(){
-			$(".err").hide()
-			var question = (exp.question_order == 'q1') ? exp.questions[1] : exp.questions[0]
-			$(".prompt").html(question)
-		},
-		button: function(){
-			response_two = $("#response_two").val()
-			if(response_two.length == 0){
-				$(".err").show()
-			}else{
-				exp.response_two = response_two
-				exp.go()
-			}
-		}
-	})
-
 	slides.subj_info = slide({
 		name: "subj_info",
 		submit: function(e){
@@ -64,7 +34,9 @@ function make_slides(f){
 				education: $("#education").val(),
 				comments: $("#comments").val(),
 			}
-			exp.go()
+		},
+		button: function(){
+			exp.go();
 		}
 	})
 
@@ -77,8 +49,7 @@ function make_slides(f){
          		"system" : exp.system,
          		"condition" : exp.condition,
          		"question order" : exp.question_order,
-         		"response one" : exp.response_one,
-         		"response two" : exp.response_two,
+         		"responses" : exp.responses,
          		"subject_information": exp.subj_data
     		};
 			setTimeout(function() {
@@ -91,12 +62,10 @@ function make_slides(f){
 }
 
 function init(){
-	exp.questions = ["First question?", "Second question?"]
     exp.user = (param('workerId') == '') ? 'undefined' : param('workerId')
     exp.condition = (param('condition') == '') ? 'a' : param('condition')
     exp.question_order = (param('qord') == '') ? 'q1' : param('qord') //'q1' or 'q2'
-	exp.response_one = ''
-	exp.response_two = ''
+    exp.responses = ''
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,
@@ -105,7 +74,7 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     }
-    exp.structure = ["question_one", "question_two", "comprehension", "subj_info", "thanks"]
+    exp.structure = ["subj_info", "thanks"]
 
 	exp.slides = make_slides(exp);
 

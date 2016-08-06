@@ -1,3 +1,4 @@
+// var socket = io('survey-nsp')
 
 function param(param) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -29,6 +30,10 @@ function make_slides(f){
 				$(".err").show()
 			}else{
 				exp.response_one = response_one
+				var question = (exp.question_order == 'q1') ? exp.questions[0] : exp.questions[1]
+				var response_packet = {workerId: param("workerId"), question: question, response: response_one}
+				// socket.emit('response', response_packet)
+				emitResponse(response_packet)
 				exp.go()
 			}
 		}
@@ -47,42 +52,26 @@ function make_slides(f){
 				$(".err").show()
 			}else{
 				exp.response_two = response_two
+				var question = (exp.question_order == 'q1') ? exp.questions[1] : exp.questions[0]
+				var response_packet = {workerId: param("workerId"), question: question, response: response_two}
+				// socket.emit('response', response_packet)
+				emitResponse(response_packet)
 				exp.go()
 			}
 		}
 	})
 
-	slides.subj_info = slide({
-		name: "subj_info",
-		submit: function(e){
-			exp.subj_data = {
-				language: $("#language").val(),
-				enjoyment: $("#enjoyment").val(),
-				assess: $('input[name="assess"]:checked').val(),
-				age: $("#age").val(),
-				gender: $("#gender").val(),
-				education: $("#education").val(),
-				comments: $("#comments").val(),
-			}
-			exp.go()
-		}
-	})
-
-	slides.thanks = slide({
-		name: "thanks",
-		start:function(){
-			console.log("End of survey reached.")
-			console.log(exp.response)
-			exp.data= {
-         		"system" : exp.system,
-         		"condition" : exp.condition,
-         		"question order" : exp.question_order,
-         		"response one" : exp.response_one,
-         		"response two" : exp.response_two,
-         		"subject_information": exp.subj_data
-    		};
-			setTimeout(function() {
-				turk.submit(exp.data);
+	slides.comprehension = slide({
+		name: "comprehension",
+		start: function(){
+			$(".redirecting").hide()
+			$(".display_prompt").html("In the next part of the survey, you will be given simple tasks in a world much like Lurekon. After you have attempted to completed each task, you will automatically be given the next one. When you have finished completing these tasks, the survey will end. Please click the button below to be redirected to the next part of the survey.")
+		},
+		button: function(){
+			var destination = '/compgame.html?condition=' + exp.condition + '&qord=' + exp.question_order + '&assignmentId=' + exp.assignmentId + '&hitID=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
+			$(".redirecting").show()
+			setTimeout(function(){
+				window.location.href = destination;
 			}, 500)
 		}
 	})
@@ -92,11 +81,14 @@ function make_slides(f){
 
 function init(){
 	exp.questions = ["First question?", "Second question?"]
-    exp.user = (param('workerId') == '') ? 'undefined' : param('workerId')
     exp.condition = (param('condition') == '') ? 'a' : param('condition')
     exp.question_order = (param('qord') == '') ? 'q1' : param('qord') //'q1' or 'q2'
 	exp.response_one = ''
 	exp.response_two = ''
+	exp.assignmentId = param("assignmentId")
+	exp.workerId = (param('workerId') == '') ? 'undefinedID' : param('workerId')
+	exp.hitId = param("hitId")
+	exp.turkSubmitTo = param("turkSubmitTo")
 	exp.system = {
 		Browser : BrowserDetect.browser,
 		OS : BrowserDetect.OS,
@@ -105,7 +97,7 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     }
-    exp.structure = ["question_one", "question_two", "comprehension", "subj_info", "thanks"]
+    exp.structure = ["question_one", "question_two", "comprehension"]
 
 	exp.slides = make_slides(exp);
 

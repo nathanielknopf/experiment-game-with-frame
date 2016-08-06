@@ -1,10 +1,3 @@
-var socket = io('/experiment-nsp');
-
-socket.on('condition', function(packet){
-	exp.condition = packet.condition
-	exp.question_order = packet.question_order
-});
-
 function param( param ) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+param+"=([^&#]*)"; 

@@ -10,6 +10,9 @@ var use_db = configs.use_db
 var time_to_play = configs.play_time
 var experiments_posted = 0
 
+var turkers = {}
+var comp_tasks = ['new', 'fruits', 'apple', 'done']
+
 try {
 	var https = require('https')
 	var port = configs.https_port
@@ -67,6 +70,59 @@ expnsp.on('connection', function(socket){
 	assignConditions()
 })
 
+var qagamensp = io.of('/qagame-nsp')
+qagamensp.on('connection', function(socket){
+	
+	socket.on('request', function(data_packet){
+		var workerId = data_packet.workerId
+		var old_task = turkers[workerId].task
+		var next_task = comp_tasks[comp_tasks.indexOf(old_task) + 1]
+		turkers[workerId].task = next_task
+		turkers[workerId].comp_actions.push({task: next_task, actions: []})
+		console.log('task: ' + next_task + ' for: ' + workerId)
+		if(next_task == 'done'){
+			var to_write = ''
+			for(var i = 0; i < turkers[workerId].comp_actions.length; i++){
+				var to_write = ''
+				var comp_actions_set = turkers[workerId].comp_actions[i]
+				for(var j = 0; j < comp_actions_set.actions.length; j++){
+					to_write += 'task: ' + comp_actions_set.task + ' - action: ' + comp_actions_set.actions[j] + '\n'
+				}
+			}
+			fs.writeFile('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
+				if(err){
+					console.log(err)
+				}
+			})
+			socket.emit('redirect', '/thanks.html')
+		}else{
+			socket.emit('task', next_task)
+		}
+	})
+
+	socket.on('action', function(action_packet){
+		console.log(action_packet)
+		var workerId = action_packet.workerId
+		var action_done = action_packet.action
+		turkers[workerId].comp_actions[turkers[workerId].comp_actions.length - 1].actions.push(action_done)
+	})
+
+})
+
+var surveynsp = io.of('/server-nsp')
+surveynsp.on('connection', function(socket){
+
+	socket.on('response', function(response_packet){
+		var workerId = response_packet.workerId
+		var response_packet = {question:response_packet.question, response: response_packet.response}
+		turkers[workerId].responses.push(response_packet)
+	})
+
+	socket.on('request', function(workerId){
+		socket.emit('responses', {responses: turkers[workerId].responses})
+	})
+})
+
 var gamensp = io.of('/game-nsp')
 gamensp.on('connection', function(socket){
 	
@@ -74,6 +130,15 @@ gamensp.on('connection', function(socket){
 	var query = require('url').parse(socket.handshake.headers.referer, true).query
 	var condition = (query.condition) ? query.condition : 'a'
 	var user = (query.workerId) ? query.workerId : 'undefinedID'
+
+	turkers[user] = {
+		task: 'new',
+		comp_actions: [],
+		responses: []
+	}
+
+	console.log(turkers)
+	console.log(turkers[user])
 
 	var fruit_score = 0
 	var animal_score = 0
@@ -93,7 +158,7 @@ gamensp.on('connection', function(socket){
 				timer(seconds - 1)
 			} else {
 				// var destination = '/exitsurvey.html?user=' + user + '&condition=' + condition
-				var destination = '/exitsurvey.html'
+				var destination = '/survey.html'
 				socket.emit('redirect', destination)
 				console.log("Redirecting " + user + ".")
 
