@@ -13,7 +13,7 @@
     </style>
     <style>
         .inventory-box {
-            display: inline-block;
+            display: inline-flex;
             width: 420px;
             height: 80px;
             margin-left: auto;
@@ -30,12 +30,14 @@
             font-size: 1.25em;
             font-family: "Arial";
         }
-        p.score-label{
-            font-size: 1.5em;
+        .label-box {
+            display: inline-flex;
+        }
+        p.score-label {
+            font-size: 1.25em;
             font-family: "Arial";
         }
     </style>
-    <h3 id="timelabel">Time remaining:</h3>
 </head>
 <body>
 
@@ -117,7 +119,9 @@ var condition = (param("condition") == "") ? "a" : param("condition")
 var groups = {
     'fruits': ['apple', 'grape', 'lemon'],
     'animals': ['cow', 'chicken', 'pig'],
-    'aquatics': ['fish', 'whale', 'crab']
+    'aquatics': ['fish', 'whale', 'crab'],
+    'scoring_objects': ['apple', 'grape', 'lemon', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab'],
+    'pocket_objects': ['rock', 'apple', 'lemon', 'grape', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
 }
 
 var pond_aquatic_pairings = {
@@ -145,12 +149,6 @@ var mountain_animal_pairings = {
 var mountain_list = [{x:1200, y:740, color:'green mountain'}, {x:700, y:750, color:'brown mountain'}, {x:1200, y:500, color:'blue mountain'}, {x:750, y:950, color:'green mountain'},{x:1100, y:850, color:'brown mountain'}, {x:200, y:300, color:'blue mountain'}, {x:60, y:800, color: 'green mountain'}, {x:500, y:250, color: 'brown mountain'}, {x:850, y:640, color: 'blue mountain'}]
 
 var rock_list = [{x:100, y:0}, {x:400, y:30}, {x:180, y:150}, {x:320, y:180}, {x:400, y:400}, {x:30, y:1000}, {x:250, y:880}, {x:500, y:650}, {x:60, y:550}, {x:680, y:1000}, {x:200, y:740}, {x:700, y:400}, {x:870, y:30}, {x:1100, y:100}, {x:870, y:320}, {x:1050, y:480}, {x:1200, y:420}, {x:800, y:520}, {x:1400, y:340}, {x:1350, y:970}, {x:900, y:980}, {x:1050, y:750}, {x:1300, y:650}, {x:1150, y:1020}]
-
-var scoring_objects = ['apple', 'grape', 'lemon', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
-var pocket_objects = ['rock', 'apple', 'lemon', 'grape', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
-var fruits = ['apple', 'grape', 'lemon']
-var animals = ['cow', 'chicken', 'pig']
-var aquatics = ['fish', 'whale', 'crab']
 
 function preload() {
     game.load.image('background', 'assets/background.png')
@@ -424,7 +422,7 @@ function pondCollision(item, pond){
     console.log("Pond collision")
     socket.emit('action', 'shoot ' + pond.key)
     var numAquatics = 1
-    if(fruits.indexOf(item.key) >= 0){
+    if(groups.fruits.indexOf(item.key) >= 0){
         numAquatics = 3
     }
     item.kill()
@@ -481,7 +479,7 @@ function shootPocket(to_shoot){
         }
         item.body.velocity.x = speed
         item.body.collideWorldBounds = true
-        if(scoring_objects.indexOf(to_shoot) >= 0){
+        if(groups.scoring_objects.indexOf(to_shoot) >= 0){
             score -= 1
         }
         updatePocket()
@@ -518,8 +516,8 @@ function spawnObject(object, x, y, n){
 }
 
 function updatePocket(){
-    for(var i = 0; i < pocket_objects.length; i++){
-        var object = pocket_objects[i]
+    for(var i = 0; i < groups.pocket_objects.length; i++){
+        var object = groups.pocket_objects[i]
         var photo_id = object + '-pic'
         var label_id = object + '-num'
         document.getElementById('score').innerHTML = "Score: " + score
@@ -537,7 +535,7 @@ function collectItem(player, item){
     console.log("Collected: " + item.key)
     socket.emit('action', 'get ' + item.key)
     item.kill()
-    if(scoring_objects.indexOf(item.key) >= 0){
+    if(groups.scoring_objects.indexOf(item.key) >= 0){
         score += 1
     }
     pocket[item.key] += 1
@@ -545,7 +543,9 @@ function collectItem(player, item){
 }
 
 </script>
-<h2 id="score" align="left">Score: 0</h2>
+
+<p class="score-label" id="timelabel">Time remaining:</p>
+
 <div class="inventory-box">
     <div class="pocket-image"><img id="rock-pic" src="assets/empty.png" onclick="shootPocket('rock')" style="width:30px;height:30px;"><p class="counter-label" id="rock-num" align="center"></p></div>
     <div class="pocket-image"><img id="apple-pic" src="assets/empty.png" onclick="shootPocket('apple')" style="width:30px;height:30px;"><p class="counter-label" id="apple-num" align="center"></p></div>
@@ -557,6 +557,10 @@ function collectItem(player, item){
     <div class="pocket-image"><img id="fish-pic" src="assets/empty.png" onclick="shootPocket('fish')" style="width:30px;height:30px;"><p class="counter-label" id="fish-num" align="center"></p></div>
     <div class="pocket-image"><img id="whale-pic" src="assets/empty.png" onclick="shootPocket('whale')" style="width:30px;height:30px;"><p class="counter-label" id="whale-num" align="center"></p></div>
     <div class="pocket-image"><img id="crab-pic" src="assets/empty.png" onclick="shootPocket('crab')" style="width:30px;height:30px;"><p class="counter-label" id="crab-num" align="center"></p></div>
+</div>
+
+<div class="label-box"> 
+    <p class="score-label" id="score">Score: 0</p>
 </div>
 
 </body>

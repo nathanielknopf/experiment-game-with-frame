@@ -11,7 +11,7 @@ var time_to_play = configs.play_time
 var experiments_posted = 0
 
 var turkers = {}
-var comp_tasks = ['new', 'fruits', 'apple', 'done']
+var comp_tasks = ['new', 'all', 'fruits', 'apple', 'done']
 
 try {
 	var https = require('https')
@@ -68,6 +68,7 @@ expnsp.on('connection', function(socket){
 	}
 
 	assignConditions()
+
 })
 
 var qagamensp = io.of('/qagame-nsp')
@@ -88,6 +89,7 @@ qagamensp.on('connection', function(socket){
 				for(var j = 0; j < comp_actions_set.actions.length; j++){
 					to_write += 'task: ' + comp_actions_set.task + ' - action: ' + comp_actions_set.actions[j] + '\n'
 				}
+				console.log(to_write)
 			}
 			fs.writeFile('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
 				if(err){
@@ -109,18 +111,23 @@ qagamensp.on('connection', function(socket){
 
 })
 
-var surveynsp = io.of('/server-nsp')
+var surveynsp = io.of('/survey-nsp')
 surveynsp.on('connection', function(socket){
+
+	console.log('connection to survey nsp')
 
 	socket.on('response', function(response_packet){
 		var workerId = response_packet.workerId
 		var response_packet = {question:response_packet.question, response: response_packet.response}
 		turkers[workerId].responses.push(response_packet)
+		console.log('thing: ' + turkers[workerId].responses)
 	})
 
 	socket.on('request', function(workerId){
-		socket.emit('responses', {responses: turkers[workerId].responses})
+		console.log('request from ' + workerId + ', sending: ' + turkers[workerId].responses)
+		socket.emit('responses', {responses:turkers[workerId].responses})
 	})
+
 })
 
 var gamensp = io.of('/game-nsp')
@@ -140,11 +147,10 @@ gamensp.on('connection', function(socket){
 	console.log(turkers)
 	console.log(turkers[user])
 
-	var fruit_score = 0
-	var animal_score = 0
+	var score = 0
 
-	var animal_actions = ['get cow', 'get chicken', 'get sheep', 'get pig']
-	var fruit_actions = ['get apple', 'get grape', 'get pineapple', 'get lemon']
+	var plus_score_actions = ['get cow', 'get chicken', 'get pig', 'get apple', 'get grape', 'get lemon', 'get fish', 'get whale', 'get crab']
+	var minus_score_actions = ['shoot cow', 'shoot chicken', 'shoot pig', 'shoot apple', 'shoot grape', 'shoot lemon', 'shoot fish', 'shoot whale', 'shoot crab']
 	
 	var discovered = []
 	var time_points = []
@@ -217,12 +223,12 @@ gamensp.on('connection', function(socket){
 		if(discovered.indexOf(action) == -1){
 			discovered.push(action)
 		}
-		if(animal_actions.indexOf(action) >= 0){
-			animal_score += 1
-			time_points.push({time:getTimestamp(), score:animal_score + fruit_score})
-		}else if(fruit_actions.indexOf(action) >= 0){
-			fruit_score += 1
-			time_points.push({time:getTimestamp(), score:animal_score + fruit_score})
+		if(plus_score_actions.indexOf(action) >= 0){
+			score += 1
+			time_points.push({time:getTimestamp(), score:score})
+		}else if(minus_score_actions.indexOf(action) >= 0){
+			score -= 1
+			time_points.push({time:getTimestamp(), score:score})
 		}
 		updateCSV(action)
 		if(use_db){

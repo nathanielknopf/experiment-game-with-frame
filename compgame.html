@@ -13,27 +13,28 @@
     </style>
     <style>
         .task-box{
-            display: inline-block;
+            display: inline-flex;
             width: 420px;
-            height: 90px;
+            height: 120px;
             border: 3px solid #000000;
+            margin: 3px;
         }
         .task-image {
             display: inline-block;
             width: 30px;
-            height: 70px;
+            height: 60px;
             margin: 3px;
         }
         .inventory-box {
-            display: inline-block;
+            display: inline-flex;
             width: 150px;
-            height: 90px;
+            height: 120px;
             border: 3px solid #000000;
         }
         .pocket-image {
             display: inline-block;
             width: 30px;
-            height: 70px;
+            height: 60px;
             margin: 3px;
         }
         p.counter-label {
@@ -88,7 +89,7 @@ var facing = 'right'
 var cursors
 var pocket = {
     rock: 1,
-    apple: 0,
+    apple: 1,
     lemon: 0,
     grape: 0,
     chicken: 0,
@@ -98,11 +99,13 @@ var pocket = {
     whale: 0,
     crab: 0
 }
-var pocket_objects = ['apple', 'lemon', 'grape', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
+
 var groups = {
     'fruits': ['apple', 'grape', 'lemon'],
     'animals': ['cow', 'chicken', 'pig'],
-    'aquatics': ['fish', 'whale', 'crab']
+    'aquatics': ['fish', 'whale', 'crab'],
+    'all': ['apple', 'lemon', 'grape', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab'],
+    'pocket_objects': ['apple', 'lemon', 'grape', 'cow', 'chicken', 'pig', 'fish', 'whale', 'crab']
 }
 
 var rocks
@@ -145,16 +148,12 @@ var desired_items = []
 
 socket.on('task', function(new_task){
     console.log("new task: " + new_task)
-    if(new_task == 'done'){
-        //wrap it up
+    if (groups[new_task]){
+        desired_items = groups[new_task]
     }else{
-        if (groups[new_task]){
-            desired_items = groups[new_task]
-        }else{
-            desired_items = [new_task]
-        }
-        updateTaskBar()
+        desired_items = [new_task]
     }
+    updateTaskBar()
 })
 
 function resetGame(){
@@ -184,6 +183,12 @@ function updateTaskBar(){
     document.getElementById("task-img-one").src = (desired_items[0]) ? 'assets/' + desired_items[0] + '.png' : 'assets/empty.png'
     document.getElementById("task-img-two").src = (desired_items[1]) ? 'assets/' + desired_items[1] + '.png' : 'assets/empty.png'
     document.getElementById("task-img-three").src = (desired_items[2]) ? 'assets/' + desired_items[2] + '.png' : 'assets/empty.png'
+    document.getElementById("task-img-four").src = (desired_items[3]) ? 'assets/' + desired_items[3] + '.png' : 'assets/empty.png'
+    document.getElementById("task-img-five").src = (desired_items[4]) ? 'assets/' + desired_items[4] + '.png' : 'assets/empty.png'
+    document.getElementById("task-img-six").src = (desired_items[5]) ? 'assets/' + desired_items[5] + '.png' : 'assets/empty.png'
+    document.getElementById("task-img-seven").src = (desired_items[6]) ? 'assets/' + desired_items[6] + '.png' : 'assets/empty.png'
+    document.getElementById("task-img-eight").src = (desired_items[7]) ? 'assets/' + desired_items[7] + '.png' : 'assets/empty.png'
+    document.getElementById("task-img-nine").src = (desired_items[8]) ? 'assets/' + desired_items[8] + '.png' : 'assets/empty.png'
 }
 
 function preload() {
@@ -215,7 +220,7 @@ function preload() {
 
 function create(){
     game.physics.startSystem(Phaser.Physics.ARCADE)
-    game.world.setBounds(0, 0, 720, 540)
+    game.add.sprite(0, 0, 'background')
 
     cursors = game.input.keyboard.createCursorKeys()
 
@@ -547,8 +552,8 @@ function updatePocket(){
         document.getElementById("rock-pic").src = 'assets/empty.png'
         document.getElementById("rock-num").innerHTML = ''
     }
-    for(var i = 0; i < pocket_objects.length; i++){
-        var object = pocket_objects[i]
+    for(var i = 0; i < groups.pocket_objects.length; i++){
+        var object = groups.pocket_objects[i]
         if (pocket[object] > 0){
             document.getElementById("other-pic").src = 'assets/' + object + '.png'
             document.getElementById("other-num").innerHTML = pocket[object]
@@ -583,13 +588,19 @@ function collectItem(player, item){
 
 <div class="inventory-box">
     <div class="pocket-image"><img id="rock-pic" src="assets/empty.png" onclick="shootPocket('rock')" style="width:30px;height:30px;"><p class="counter-label" id="rock-num" align="center"></p></div>
-    <div class="pocket-image"><img id="other-pic" src="assets/empty.png" style="width:30px;height:30px;"><p class="counter-label" id="other-num" align="center"></p></div> 
+    <div class="pocket-image"><img id="other-pic" src="assets/empty.png" style="width:30px;height:30px;"><p class="counter-label" id="other-num" align="center"></p></div>
 </div>
-
 <div class="task-box">
+    <h3>Please find one of these items:</h3>
     <div class="task-image"><img id="task-img-one" src="assets/empty.png" style="width:30px;height:30px;"></div>
     <div class="task-image"><img id="task-img-two" src="assets/empty.png" style="width:30px;height:30px;"></div>
     <div class="task-image"><img id="task-img-three" src="assets/empty.png" style="width:30px;height:30px;"></div>
+    <div class="task-image"><img id="task-img-four" src="assets/empty.png" style="width:30px;height:30px;"></div>
+    <div class="task-image"><img id="task-img-five" src="assets/empty.png" style="width:30px;height:30px;"></div>
+    <div class="task-image"><img id="task-img-six" src="assets/empty.png" style="width:30px;height:30px;"></div>
+    <div class="task-image"><img id="task-img-seven" src="assets/empty.png" style="width:30px;height:30px;"></div>
+    <div class="task-image"><img id="task-img-eight" src="assets/empty.png" style="width:30px;height:30px;"></div>
+    <div class="task-image"><img id="task-img-nine" src="assets/empty.png" style="width:30px;height:30px;"></div>
 </div>
 </body>
 </html>

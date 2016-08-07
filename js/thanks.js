@@ -1,10 +1,3 @@
-// var socket = io('survey-nsp')
-// socket.emit('request', param("workerId"))
-
-// socket.on('responses', function(responses_packet){
-// 	exp.responses = responses_packet.responses
-// })
-
 function param(param) { 
 	param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+param+"=([^&#]*)"; 
@@ -24,7 +17,7 @@ function make_slides(f){
 
 	slides.subj_info = slide({
 		name: "subj_info",
-		submit: function(e){
+		submit: function(){
 			exp.subj_data = {
 				language: $("#language").val(),
 				enjoyment: $("#enjoyment").val(),
@@ -33,16 +26,14 @@ function make_slides(f){
 				gender: $("#gender").val(),
 				education: $("#education").val(),
 				comments: $("#comments").val(),
-			}
-		},
-		button: function(){
+			};
 			exp.go();
 		}
 	})
 
 	slides.thanks = slide({
 		name: "thanks",
-		start:function(){
+		start: function(){
 			console.log("End of survey reached.")
 			console.log(exp.response)
 			exp.data= {

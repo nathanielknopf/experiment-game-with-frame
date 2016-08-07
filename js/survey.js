@@ -31,7 +31,7 @@ function make_slides(f){
 			}else{
 				exp.response_one = response_one
 				var question = (exp.question_order == 'q1') ? exp.questions[0] : exp.questions[1]
-				var response_packet = {workerId: param("workerId"), question: question, response: response_one}
+				var response_packet = {workerId: exp.workerId, question: question, response: response_one}
 				// socket.emit('response', response_packet)
 				emitResponse(response_packet)
 				exp.go()
@@ -53,7 +53,7 @@ function make_slides(f){
 			}else{
 				exp.response_two = response_two
 				var question = (exp.question_order == 'q1') ? exp.questions[1] : exp.questions[0]
-				var response_packet = {workerId: param("workerId"), question: question, response: response_two}
+				var response_packet = {workerId: exp.workerId, question: question, response: response_two}
 				// socket.emit('response', response_packet)
 				emitResponse(response_packet)
 				exp.go()
