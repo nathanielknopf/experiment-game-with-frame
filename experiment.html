@@ -31,6 +31,8 @@
     socket.on('condition', function(packet){
         exp.condition = packet.condition
         exp.question_order = packet.question_order
+        exp.supplement = packet.supplement
+        console.log(exp.supplement)
     });
     </script>
 
@@ -52,19 +54,24 @@
         <h3>Instructions</h3>
         <p>
             Welcome to the world of Lurekon! 
-            You are the <strong>first generation</strong> in what will be a long series of generations of explorers. 
-            Explore Lurekon and discover as much as you can. 
+            You are the <strong>second generation</strong> in what will be a long series of generations of explorers. 
+            Explore Lurekon and discover as much as you can, and <strong>try to get as many points as possible.</strong>
             When you are done, you will be able to <strong>send a message</strong> to the next generation of explorers, to help them discover more about Lurekon.
         </p>
         <p>
             Move by using the arrow keys on your keyboard and collect items by moving over them. 
-            Items will appear in your <strong>pocket</strong>. 
+            Items will appear in your <strong>pocket</strong>.
             Items in your pocket can be thrown by clicking on their picture.
             Items are thrown in the direction you are facing.
         </p>
         <p>
             You will have 3 minutes to explore.
         </p>
+        <p>
+            <strong>The previous generation has left the following message for you:</strong>
+        </p>
+        <p class="prompt">{{}}</p>
+        
         <button onclick="_s.button()">Continue</button>
     </div>
 

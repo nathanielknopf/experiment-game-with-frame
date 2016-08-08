@@ -24,6 +24,9 @@ function make_slides(f){
 
 	slides.instructions = slide({
 		name: "instructions",
+		start: function(){
+			$(".prompt").html('"' + exp.supplement + '"')
+		},
 		button: function(){
 			exp.go()
 		}

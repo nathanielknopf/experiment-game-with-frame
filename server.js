@@ -12,6 +12,7 @@ var experiments_posted = 0
 
 var turkers = {}
 var global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
+var supplements = ["Collect as many rocks as you can. Throw them at the other objects to generate a 3rd object.", "Definitely throw the rocks.", "Look for the rocks and avoid everything else because they prevent you from moving.", "Trees and pools don't allow you to interact"]
 
 try {
 	var https = require('https')
@@ -59,11 +60,19 @@ var expnsp = io.of('/experiment-nsp')
 expnsp.on('connection', function(socket){
 
 	var assignConditions = function(){
-		//code for determining the condition of the experiment
-		//for now, assign a constant value
 		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b'
 		var question_order = (experiments_posted < 6) ? 'q1' : 'q2'
-		socket.emit('condition', {condition: condition, question_order: question_order})
+		var supplement
+		if(experiments_posted <= 2){
+			supplement = supplements[0]
+		}else if(experiments_posted <= 5){
+			supplement = supplements[1]
+		}else if(experiments_posted <= 8){
+			supplement = supplements[2]
+		}else{
+			supplement = supplements[3]
+		}
+		socket.emit('condition', {condition: condition, question_order: question_order, supplement: supplement})
 		experiments_posted += 1
 	}
 
