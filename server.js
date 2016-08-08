@@ -142,7 +142,7 @@ gamensp.on('connection', function(socket){
 		task: 'new',
 		comp_actions: [],
 		responses: [],
-		comp_tasks = global_comp_tasks.sort(function(){return 0.5-Math.random()})
+		comp_tasks: global_comp_tasks.sort(function(){return 0.5-Math.random()})
 	}
 
 	turkers[user].comp_tasks.splice(0, 0, "new")

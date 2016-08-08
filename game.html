@@ -409,7 +409,7 @@ function mountainCollision(rock, mountain){
                 mountain.x -= 5
             }, 15)
             if(mountains.children[i].animalsToSpawn > 0){
-3            var color = mountains.children[i].colorOfThisMountain
+            var color = mountains.children[i].colorOfThisMountain
                 var animal = (condition == 'a') ? mountain_animal_pairings[color] : groups['animals'][Math.floor(Math.random()*3)]
                 spawnObject(animal, mountain.x, mountain.y+40, 1)
                 mountains.children[i].animalsToSpawn -= 1
