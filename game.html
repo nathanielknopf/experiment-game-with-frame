@@ -194,7 +194,7 @@ function create() {
     }
 
     for (var i = 0; i < trees.children.length; i++){
-        trees.children[i].canSpawnFruit = true
+        trees.children[i].fruitToSpawn = 3
         trees.children[i].colorOfThisTree = tree_list[i].color
     }
 
@@ -216,7 +216,7 @@ function create() {
     }
 
     for (var i = 0; i < mountains.children.length; i++){
-        mountains.children[i].canSpawnAnimal = true
+        mountains.children[i].animalsToSpawn = 3
         mountains.children[i].colorOfThisMountain = mountain_list[i].color
     }
 
@@ -238,7 +238,7 @@ function create() {
     }
 
     for (var i = 0; i < ponds.children.length; i++){
-        ponds.children[i].canSpawnAquatic = true
+        ponds.children[i].aquaticsToSpawn = 3
         ponds.children[i].colorOfThisPond = pond_list[i].color
     }
 
@@ -382,11 +382,11 @@ function treeCollision(rock, tree){
             setTimeout(function(){
                 tree.x -= 5
             }, 15)
-            if(trees.children[i].canSpawnFruit){
+            if(trees.children[i].fruitToSpawn > 0){
                 var color = trees.children[i].colorOfThisTree
                 var fruit = (condition == 'a') ? tree_fruit_pairings[color] : groups['fruits'][Math.floor(Math.random()*3)]
                 spawnObject(fruit, tree.x, tree.y+60, 1)
-                trees.children[i].canSpawnFruit = false
+                trees.children[i].fruitToSpawn -= 1
             }
         }
     }
@@ -408,11 +408,11 @@ function mountainCollision(rock, mountain){
             setTimeout(function(){
                 mountain.x -= 5
             }, 15)
-            if(mountains.children[i].canSpawnAnimal){
-                var color = mountains.children[i].colorOfThisMountain
+            if(mountains.children[i].animalsToSpawn > 0){
+3            var color = mountains.children[i].colorOfThisMountain
                 var animal = (condition == 'a') ? mountain_animal_pairings[color] : groups['animals'][Math.floor(Math.random()*3)]
                 spawnObject(animal, mountain.x, mountain.y+40, 1)
-                mountains.children[i].canSpawnAnimal = false
+                mountains.children[i].animalsToSpawn -= 1
             }
         }
     }
@@ -438,11 +438,11 @@ function pondCollision(item, pond){
             setTimeout(function(){
                 pond.x -= 5
             }, 15)
-            if(ponds.children[i].canSpawnAquatic){
+            if(ponds.children[i].aquaticsToSpawn > 0){
                 var color = ponds.children[i].colorOfThisPond
                 var aquatic = (condition == 'a') ? pond_aquatic_pairings[color] : groups['aquatics'][Math.floor(Math.random()*3)]
                 spawnObject(aquatic, pond.x, pond.y+40, numAquatics)
-                ponds.children[i].canSpawnAquatic = false
+                ponds.children[i].aquaticsToSpawn -= numAquatics
             }
         }
     }

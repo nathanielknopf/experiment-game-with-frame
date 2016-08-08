@@ -44,17 +44,17 @@ var queryThis = function(to_query){
 }
 
 var createTable = function(workerID){
-	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + workerID + '( workerID VARCHAR(30), cond VARCHAR(1), action VARCHAR(30), fruits INT, animals INT, access TIMESTAMP)'
+	var new_table_query = 'CREATE TABLE IF NOT EXISTS ' + workerID + '( workerID VARCHAR(30), cond VARCHAR(1), action VARCHAR(50), score INT, access TIMESTAMP)'
 	queryThis(new_table_query)
 }
 
 var addPlayer = function(workerID, condition){
 	createTable(name) //make new table if it doesn't exist already
-	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "start experiment", 0, 0, "' + getTimestamp() + '")')
+	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "start experiment", 0, "' + getTimestamp() + '")')
 }
 
-var updatePlayer = function(workerID, condition, action, fruit_score, animal_score){
-	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "' + action + '", ' + fruit_score + ', ' + animal_score + ', "' + getTimestamp() + '")')
+var updatePlayer = function(workerID, condition, action, score){
+	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "' + action + '", ' + score + ', "' + getTimestamp() + '")')
 }
 
 module.exports = {

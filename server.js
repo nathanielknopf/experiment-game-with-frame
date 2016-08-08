@@ -11,7 +11,7 @@ var time_to_play = configs.play_time
 var experiments_posted = 0
 
 var turkers = {}
-var comp_tasks = ['new', 'all', 'fruits', 'apple', 'done']
+var global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
 
 try {
 	var https = require('https')
@@ -77,7 +77,7 @@ qagamensp.on('connection', function(socket){
 	socket.on('request', function(data_packet){
 		var workerId = data_packet.workerId
 		var old_task = turkers[workerId].task
-		var next_task = comp_tasks[comp_tasks.indexOf(old_task) + 1]
+		var next_task = turkers[workerId].comp_tasks[turkers[workerId].comp_tasks.indexOf(old_task) + 1]
 		turkers[workerId].task = next_task
 		turkers[workerId].comp_actions.push({task: next_task, actions: []})
 		console.log('task: ' + next_task + ' for: ' + workerId)
@@ -141,8 +141,12 @@ gamensp.on('connection', function(socket){
 	turkers[user] = {
 		task: 'new',
 		comp_actions: [],
-		responses: []
+		responses: [],
+		comp_tasks = global_comp_tasks.sort(function(){return 0.5-Math.random()})
 	}
+
+	turkers[user].comp_tasks.splice(0, 0, "new")
+	turkers[user].comp_tasks.splice(turkers[user].comp_tasks.length, 0, "done")
 
 	console.log(turkers)
 	console.log(turkers[user])
@@ -215,7 +219,7 @@ gamensp.on('connection', function(socket){
 	}
 
 	var updateDB = function(action){
-		database.updatePlayer(user, condition, action, fruit_score, animal_score)
+		database.updatePlayer(user, condition, action, score)
 	}
 
 	socket.on('action', function(action){

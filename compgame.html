@@ -417,10 +417,21 @@ function treeCollision(rock, tree){
             }, 15)
             if(trees.children[i].canSpawnFruit){
                 var color = trees.children[i].colorOfThisTree
-                var fruit = (condition == 'a') ? tree_fruit_pairings[color] : ['apple', 'lemon', 'grape'][Math.floor(Math.random()*3)]
-                spawnObject(fruit, tree.x, tree.y+60, 1)
-                trees.children[i].canSpawnFruit = false
+                var fruit = (condition == 'a') ? tree_fruit_pairings[color] : groups.fruits[Math.floor(Math.random()*3)]
+                if(desired_items.indexOf(fruit) >= 0){
+                    socket.emit('action', {workerId: param("workerId"), action: 'collect correct item: ' + fruit})
+                }else{
+                    socket.emit('action', {workerId: param("workerId"), action: 'collect incorrect item: ' + fruit})
+                }
+                socket.emit('request', {workerId: param("workerId")})
+                resetGame()
             }
+            // if(trees.children[i].canSpawnFruit){
+            //     var color = trees.children[i].colorOfThisTree
+            //     var fruit = (condition == 'a') ? tree_fruit_pairings[color] : ['apple', 'lemon', 'grape'][Math.floor(Math.random()*3)]
+            //     spawnObject(fruit, tree.x, tree.y+60, 1)
+            //     trees.children[i].canSpawnFruit = false
+            // }
         }
     }
 }
@@ -443,10 +454,21 @@ function mountainCollision(rock, mountain){
             }, 15)
             if(mountains.children[i].canSpawnAnimal){
                 var color = mountains.children[i].colorOfThisMountain
-                var animal = (condition == 'a') ? mountain_animal_pairings[color] : groups['animals'][Math.floor(Math.random()*3)]
-                spawnObject(animal, mountain.x, mountain.y+40, 1)
-                mountains.children[i].canSpawnAnimal = false
+                var animal = (condition == 'a') ? mountain_animal_pairings[color] : groups.animals[Math.floor(Math.random()*3)]
+                if(desired_items.indexOf(animal) >= 0){
+                    socket.emit('action', {workerId: param("workerId"), action: 'collect correct item: ' + animal})
+                }else{
+                    socket.emit('action', {workerId: param("workerId"), action: 'collect incorrect item: ' + animal})
+                }
+                socket.emit('request', {workerId: param("workerId")})
+                resetGame()
             }
+            // if(mountains.children[i].canSpawnAnimal){
+            //     var color = mountains.children[i].colorOfThisMountain
+            //     var animal = (condition == 'a') ? mountain_animal_pairings[color] : groups['animals'][Math.floor(Math.random()*3)]
+            //     spawnObject(animal, mountain.x, mountain.y+40, 1)
+            //     mountains.children[i].canSpawnAnimal = false
+            // }
         }
     }
 }
@@ -473,10 +495,21 @@ function pondCollision(item, pond){
             }, 15)
             if(ponds.children[i].canSpawnAquatic){
                 var color = ponds.children[i].colorOfThisPond
-                var aquatic = (condition == 'a') ? pond_aquatic_pairings[color] : groups['aquatics'][Math.floor(Math.random()*3)]
-                spawnObject(aquatic, pond.x, pond.y+40, numAquatics)
-                ponds.children[i].canSpawnAquatic = false
+                var aquatic = (condition == 'a') ? pond_aquatic_pairings[color] : groups.aquatics[Math.floor(Math.random()*3)]
+                if(desired_items.indexOf(aquatic) >= 0){
+                    socket.emit('action', {workerId: param("workerId"), action: 'collect correct item: ' + aquatic})
+                }else{
+                    socket.emit('action', {workerId: param("workerId"), action: 'collect incorrect item: ' + aquatic})
+                }
+                socket.emit('request', {workerId: param("workerId")})
+                resetGame()
             }
+            // if(ponds.children[i].canSpawnAquatic){
+            //     var color = ponds.children[i].colorOfThisPond
+            //     var aquatic = (condition == 'a') ? pond_aquatic_pairings[color] : groups['aquatics'][Math.floor(Math.random()*3)]
+            //     spawnObject(aquatic, pond.x, pond.y+40, numAquatics)
+            //     ponds.children[i].canSpawnAquatic = false
+            // }
         }
     }
 }
@@ -572,16 +605,23 @@ function collectItem(player, item){
     console.log(pocket.rock)
     if(item.key == 'rock'){
         socket.emit('action', {workerId: param("workerId"), action: 'collect rock'})
-    }else{
-        if(desired_items.indexOf(item.key) >= 0){
-            socket.emit('action', {workerId: param("workerId"), action: 'collect correct item: ' + item.key})
-        }else{        
-            socket.emit('action', {workerId: param("workerId"), action: 'collect incorrect item: ' + item.key})
-        }
-        socket.emit('request', {workerId: param("workerId")})
-        resetGame()
     }
+    // }else{
+    //     if(desired_items.indexOf(item.key) >= 0){
+    //         socket.emit('action', {workerId: param("workerId"), action: 'collect correct item: ' + item.key})
+    //     }else{        
+    //         socket.emit('action', {workerId: param("workerId"), action: 'collect incorrect item: ' + item.key})
+    //     }
+    //     socket.emit('request', {workerId: param("workerId")})
+    //     resetGame()
+    // }
     updatePocket()   
+}
+
+function giveUp(){
+    socket.emit('action', {workerId: param("workerId"), action: 'give up on task'})
+    socket.emit('request', {workerId: param("workerId")})
+    resetGame()
 }
 
 </script>
@@ -602,5 +642,6 @@ function collectItem(player, item){
     <div class="task-image"><img id="task-img-eight" src="assets/empty.png" style="width:30px;height:30px;"></div>
     <div class="task-image"><img id="task-img-nine" src="assets/empty.png" style="width:30px;height:30px;"></div>
 </div>
+<button onclick="giveUp()">Give up on this task</button>
 </body>
 </html>
