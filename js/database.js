@@ -49,7 +49,7 @@ var createTable = function(workerID){
 }
 
 var addPlayer = function(workerID, condition){
-	createTable(name) //make new table if it doesn't exist already
+	createTable(workerID) //make new table if it doesn't exist already
 	queryThis('INSERT INTO ' + workerID + ' VALUES("' + workerID + '", "' + condition + '", "start experiment", 0, "' + getTimestamp() + '")')
 }
 
