@@ -24,13 +24,21 @@ function make_slides(f){
 
 	slides.instructions = slide({
 		name: "instructions",
+		button: function(){
+			setTimeout(function(){
+				exp.go()
+			}, 1000)
+		}
+	});
+
+	slides.supplementary = slide({
+		name: "supplementary",
 		start: function(){
 			$(".prompt").html('"' + exp.supplement + '"')
 		},
 		button: function(){
-			exp.go()
 		}
-	});
+	})
 
 	slides.login = slide({
 		name: "login",
@@ -59,7 +67,7 @@ function init(){
 		screenW: screen.width,
 		screenUW: exp.width
     };
-    exp.structure = ["i0", "instructions", "login"];
+    exp.structure = ["i0", "instructions", "supplementary", "login"];
     exp.assignmentId = param("assignmentId");
     exp.hitId = param("hitId");
     exp.workerId = param("workerId");

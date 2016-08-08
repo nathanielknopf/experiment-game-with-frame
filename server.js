@@ -59,7 +59,7 @@ var getTimestamp = function(){
 var expnsp = io.of('/experiment-nsp')
 expnsp.on('connection', function(socket){
 
-	var assignConditions = function(){
+	socket.on('request', function(){
 		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b'
 		var question_order = (experiments_posted < 6) ? 'q1' : 'q2'
 		var supplement
@@ -74,9 +74,8 @@ expnsp.on('connection', function(socket){
 		}
 		socket.emit('condition', {condition: condition, question_order: question_order, supplement: supplement})
 		experiments_posted += 1
-	}
-
-	assignConditions()
+		console.log('condition sent')
+	})
 
 })
 
