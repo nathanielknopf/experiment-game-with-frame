@@ -159,9 +159,8 @@ gamensp.on('connection', function(socket){
 
 	turkers[user].comp_tasks.splice(0, 0, "new")
 	turkers[user].comp_tasks.splice(turkers[user].comp_tasks.length, 0, "done")
-
-	console.log(turkers)
-	console.log(turkers[user])
+	console.log(turkers[user].comp_tasks)
+	global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
 
 	var score = 0
 
