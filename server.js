@@ -73,7 +73,8 @@ expnsp.on('connection', function(socket){
 
 var qagamensp = io.of('/qagame-nsp')
 qagamensp.on('connection', function(socket){
-	
+
+
 	socket.on('request', function(data_packet){
 		var workerId = data_packet.workerId
 		var old_task = turkers[workerId].task
@@ -91,11 +92,11 @@ qagamensp.on('connection', function(socket){
 				}
 				console.log(to_write)
 			}
-			fs.writeFileSync('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
-				if(err){
-					console.log(err)
-				}
-			})
+			// fs.writeFileSync('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
+			// 	if(err){
+			// 		console.log(err)
+			// 	}
+			// })
 			socket.emit('redirect', '/thanks.html')
 		}else{
 			socket.emit('task', next_task)
@@ -107,6 +108,11 @@ qagamensp.on('connection', function(socket){
 		var workerId = action_packet.workerId
 		var action_done = action_packet.action
 		turkers[workerId].comp_actions[turkers[workerId].comp_actions.length - 1].actions.push(action_done)
+		fs.appendFile('resultCSVs/' + workerId + '-comprehension.txt', 'task: ' + turkers[workerId].task + ', action: ' + action_done + '\n', function(err){
+			if(err){
+				console.log(err)
+			}
+		})
 	})
 
 })
@@ -137,6 +143,12 @@ gamensp.on('connection', function(socket){
 	var query = require('url').parse(socket.handshake.headers.referer, true).query
 	var condition = (query.condition) ? query.condition : 'a'
 	var user = (query.workerId) ? query.workerId : 'undefinedID'
+
+	fs.writeFile('resultCSVs/' + user + '-comprehension.txt', 'Comprehension Summary\n', function(err){
+		if(err){
+			console.log(err)
+		}
+	})
 
 	turkers[user] = {
 		task: 'new',
