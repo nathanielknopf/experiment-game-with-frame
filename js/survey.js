@@ -65,7 +65,7 @@ function make_slides(f){
 		name: "comprehension",
 		start: function(){
 			$(".redirecting").hide()
-			$(".display_prompt").html("In the next part of the survey, you will be given simple tasks in a world much like Lurekon. After you have attempted to completed each task, you will automatically be given the next one. When you have finished completing these tasks, the survey will end. Please click the button below to be redirected to the next part of the survey.")
+			$(".display_prompt").html("In the next part of the survey, you will be given simple tasks in Lurekon. There are 7 tasks in total. When you have finished completing these tasks, the survey will end. If you don't know how to complete a task, you can click the give up button to skip to the next task. Please click the button below to be redirected to the next part of the survey.")
 		},
 		button: function(){
 			var destination = '/compgame.html?condition=' + exp.condition + '&qord=' + exp.question_order + '&assignmentId=' + exp.assignmentId + '&hitID=' + exp.hitId + '&workerId=' + exp.workerId + '&turkSubmitTo=' + exp.turkSubmitTo;
