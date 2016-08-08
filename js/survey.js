@@ -80,7 +80,7 @@ function make_slides(f){
 }
 
 function init(){
-	exp.questions = ["First question?", "Second question?"]
+	exp.questions = ["One of the next turkers to explore Lurekon will have to find some items in the world. They will have less time to explore Lurekon than you did. Tell them some things to help them.", "One of the next turkers to explore Lurekon will have to find as many fish as possible. They will have less time to explore Lurekon than you did. Tell them some things to help them."]
     exp.condition = (param('condition') == '') ? 'a' : param('condition')
     exp.question_order = (param('qord') == '') ? 'q1' : param('qord') //'q1' or 'q2'
 	exp.response_one = ''

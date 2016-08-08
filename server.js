@@ -91,7 +91,7 @@ qagamensp.on('connection', function(socket){
 				}
 				console.log(to_write)
 			}
-			fs.writeFile('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
+			fs.writeFileSync('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
 				if(err){
 					console.log(err)
 				}
@@ -236,7 +236,7 @@ gamensp.on('connection', function(socket){
 		}
 		updateCSV(action)
 		if(use_db){
-			updateDB()
+			updateDB(action)
 		}
 	});
 })
