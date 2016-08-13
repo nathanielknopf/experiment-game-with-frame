@@ -39,6 +39,7 @@ function make_slides(f){
 			exp.data= {
          		"system" : exp.system,
          		"condition" : exp.condition,
+         		"supplement": exp.supplement,
          		"question order" : exp.question_order,
          		"responses" : exp.responses,
          		"subject_information": exp.subj_data

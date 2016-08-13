@@ -1,0 +1,7 @@
+config.js
+.DS_Store
+assets/.DS_Store
+css/.DS_Store
+node_modules/
+resultCSVs/
+todo

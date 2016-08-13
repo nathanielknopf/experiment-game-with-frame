@@ -13,6 +13,8 @@ var experiments_posted = 0
 var turkers = {}
 var global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
 var supplements = ["Collect as many rocks as you can. Throw them at the other objects to generate a 3rd object.", "Definitely throw the rocks.", "Look for the rocks and avoid everything else because they prevent you from moving.", "Trees and pools don't allow you to interact"]
+var conditionAssignments = {}
+
 
 try {
 	var https = require('https')
@@ -59,7 +61,8 @@ var getTimestamp = function(){
 var expnsp = io.of('/experiment-nsp')
 expnsp.on('connection', function(socket){
 
-	socket.on('request', function(){
+	socket.on('request', function(workerPacket){
+		var workerId = workerPacket.workerId;
 		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b'
 		var question_order = (experiments_posted < 6) ? 'q1' : 'q2'
 		var supplement
@@ -72,8 +75,18 @@ expnsp.on('connection', function(socket){
 		}else{
 			supplement = supplements[3]
 		}
-		socket.emit('condition', {condition: condition, question_order: question_order, supplement: supplement})
+
+		conditionAssignments[workerId] = {
+			experimentsPosted: experiments_posted,
+			supplement: supplement,
+			condition: condition,
+			questionOrder: question_order
+		}
+		
 		experiments_posted += 1
+		
+		socket.emit('condition', {condition: condition, question_order: question_order, supplement: supplement})
+
 		console.log('condition sent')
 	})
 
@@ -81,7 +94,6 @@ expnsp.on('connection', function(socket){
 
 var qagamensp = io.of('/qagame-nsp')
 qagamensp.on('connection', function(socket){
-
 
 	socket.on('request', function(data_packet){
 		var workerId = data_packet.workerId
@@ -137,9 +149,10 @@ surveynsp.on('connection', function(socket){
 		console.log('thing: ' + turkers[workerId].responses)
 	})
 
-	socket.on('request', function(workerId){
-		console.log('request from ' + workerId + ', sending: ' + turkers[workerId].responses)
-		socket.emit('responses', {responses:turkers[workerId].responses})
+	socket.on('request', function(request_packet){
+		var workerId = request_packet.workerId;
+		// console.log('request from ' + workerId + ', sending: ' + turkers[workerId].responses)
+		socket.emit('responses', {responses:turkers[workerId].responses, supplement: conditionAssignments[workerId].supplement})
 	})
 
 })

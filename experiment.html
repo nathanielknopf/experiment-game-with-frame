@@ -28,8 +28,23 @@
     <script>
     var socket = io('/experiment-nsp');
 
+    function param( param ) { 
+        param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS = "[\\?&]"+param+"=([^&#]*)"; 
+        var regex = new RegExp( regexS ); 
+        var tmpURL = window.location.href
+        var results = regex.exec( tmpURL ); 
+        console.log("param: " + param + ", URL: " + tmpURL)
+        if( results == null ) { 
+            return ""; 
+        } else { 
+            return results[1];    
+        } 
+    }
+
     function requestCondition(){
-        socket.emit('request')
+        var workerId = (param("workerId")) ? param("workerId") : 'undefinedID';
+        socket.emit('request', {workerId: workerId})
     }
 
     socket.on('condition', function(packet){

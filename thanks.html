@@ -30,12 +30,15 @@
     <script>
     var socket = io('/survey-nsp')
     console.log('emitting request')
-    socket.emit('request', param("workerId"))
+    var workerId = (param("workerId") ? param("workerId") : 'undefinedID');
+    socket.emit('request', {workerId: workerId)
     console.log('request emitted')
 
     socket.on('responses', function(responses_packet){
-      exp.responses = responses_packet.responses
-      console.log('responses: ' + exp.responses)
+      exp.responses = responses_packet.responses;
+      exp.supplement = responses_packet.supplement;
+      console.log('responses: ' + exp.responses);
+      console.log('supplement: ' + exp.supplement);
     })
     </script>
 
