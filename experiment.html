@@ -52,6 +52,7 @@
         exp.question_order = packet.question_order
         exp.supplement = packet.supplement
         console.log(exp.supplement)
+        exp.go();
     });
     </script>
 
@@ -87,7 +88,8 @@
             You will have 3 minutes to explore.
         </p>
         
-        <button onclick="_s.button();requestCondition();">Continue</button>
+        <!-- <button onclick="_s.button();requestCondition();">Continue</button> -->
+        <button onclick="requestCondition();">Continue</button>
     </div>
 
     <div class="slide" id="supplementary">

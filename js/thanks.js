@@ -42,7 +42,8 @@ function make_slides(f){
          		"supplement": exp.supplement,
          		"question order" : exp.question_order,
          		"responses" : exp.responses,
-         		"subject_information": exp.subj_data
+         		"subject_information": exp.subj_data,
+         		"comprehension": exp.comprehension
     		};
 			setTimeout(function() {
 				turk.submit(exp.data);

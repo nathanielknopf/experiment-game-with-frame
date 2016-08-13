@@ -28,15 +28,16 @@
     <!-- socket.io -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
-    var socket = io('/survey-nsp')
-    console.log('emitting request')
+    var socket = io('/survey-nsp');
+    console.log('emitting request');
     var workerId = (param("workerId") ? param("workerId") : 'undefinedID');
-    socket.emit('request', {workerId: workerId)
-    console.log('request emitted')
+    socket.emit('request', {workerId: workerId});
+    console.log('request emitted');
 
-    socket.on('responses', function(responses_packet){
-      exp.responses = responses_packet.responses;
-      exp.supplement = responses_packet.supplement;
+    socket.on('responses', function(responsesPacket){
+      exp.responses = responsesPacket.responses;
+      exp.supplement = responsesPacket.supplement;
+      exp.comprehension = responsesPacket.comprehension;
       console.log('responses: ' + exp.responses);
       console.log('supplement: ' + exp.supplement);
     })

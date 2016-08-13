@@ -62,26 +62,42 @@ var expnsp = io.of('/experiment-nsp')
 expnsp.on('connection', function(socket){
 
 	socket.on('request', function(workerPacket){
-		var workerId = workerPacket.workerId;
-		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b'
-		var question_order = (experiments_posted < 6) ? 'q1' : 'q2'
-		var supplement
-		if(experiments_posted <= 2){
-			supplement = supplements[0]
-		}else if(experiments_posted <= 5){
-			supplement = supplements[1]
-		}else if(experiments_posted <= 8){
-			supplement = supplements[2]
-		}else{
-			supplement = supplements[3]
-		}
 
-		conditionAssignments[workerId] = {
-			experimentsPosted: experiments_posted,
+		var workerId = workerPacket.workerId;
+		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b';
+		var question_order = (experiments_posted < 6) ? 'q1' : 'q2';
+		var supplement = supplements[0];
+		// if(experiments_posted <= 2){
+		// 	supplement = supplements[0]
+		// }else if(experiments_posted <= 5){
+		// 	supplement = supplements[1]
+		// }else if(experiments_posted <= 8){
+		// 	supplement = supplements[2]
+		// }else{
+		// 	supplement = supplements[3]
+		// };
+
+		turkers[workerId] = {
+			task: 'new',
+			comp_actions: [],
+			responses: [],
+			comp_tasks: global_comp_tasks.sort(function(){return 0.5-Math.random()}),
 			supplement: supplement,
 			condition: condition,
-			questionOrder: question_order
+			questionOrder: question_order,
+			experimenterNumber: experiments_posted,
+			score: 0
 		}
+
+		turkers[workerId].comp_tasks.splice(0, 0, "new")
+		turkers[workerId].comp_tasks.splice(turkers[workerId].comp_tasks.length, 0, "done")
+		global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
+
+		fs.writeFile('results/' + workerId + '-comprehension.txt', 'Comprehension Summary\n', function(err){
+			if(err){
+				console.log(err)
+			}
+		})
 		
 		experiments_posted += 1
 		
@@ -101,7 +117,7 @@ qagamensp.on('connection', function(socket){
 		var next_task = turkers[workerId].comp_tasks[turkers[workerId].comp_tasks.indexOf(old_task) + 1]
 		turkers[workerId].task = next_task
 		turkers[workerId].comp_actions.push({task: next_task, actions: []})
-		console.log('task: ' + next_task + ' for: ' + workerId)
+		// console.log('task: ' + next_task + ' for: ' + workerId)
 		if(next_task == 'done'){
 			var to_write = ''
 			for(var i = 0; i < turkers[workerId].comp_actions.length; i++){
@@ -112,11 +128,13 @@ qagamensp.on('connection', function(socket){
 				}
 				console.log(to_write)
 			}
-			// fs.writeFileSync('resultCSVs/' + workerId + '-comprehension.txt', to_write, function(err){
+
+			// fs.writeFileSync('results/' + workerId + '-comprehension.txt', to_write, function(err){
 			// 	if(err){
 			// 		console.log(err)
 			// 	}
 			// })
+
 			socket.emit('redirect', '/thanks.html')
 		}else{
 			socket.emit('task', next_task)
@@ -124,15 +142,16 @@ qagamensp.on('connection', function(socket){
 	})
 
 	socket.on('action', function(action_packet){
-		console.log(action_packet)
 		var workerId = action_packet.workerId
 		var action_done = action_packet.action
 		turkers[workerId].comp_actions[turkers[workerId].comp_actions.length - 1].actions.push(action_done)
-		fs.appendFile('resultCSVs/' + workerId + '-comprehension.txt', 'task: ' + turkers[workerId].task + ', action: ' + action_done + '\n', function(err){
+		fs.appendFile('results/' + workerId + '-comprehension.txt', 'task: ' + turkers[workerId].task + ', action: ' + action_done + '\n', function(err){
 			if(err){
 				console.log(err)
 			}
 		})
+		console.log('comp actions: ');
+		console.log(turkers[workerId].comp_actions)
 	})
 
 })
@@ -140,19 +159,18 @@ qagamensp.on('connection', function(socket){
 var surveynsp = io.of('/survey-nsp')
 surveynsp.on('connection', function(socket){
 
-	console.log('connection to survey nsp')
-
 	socket.on('response', function(response_packet){
 		var workerId = response_packet.workerId
 		var response_packet = {question:response_packet.question, response: response_packet.response}
 		turkers[workerId].responses.push(response_packet)
-		console.log('thing: ' + turkers[workerId].responses)
 	})
 
 	socket.on('request', function(request_packet){
 		var workerId = request_packet.workerId;
+		console.log('request for: ' + turkers[workerId]);
+		console.log('comp: ' + turkers[workerId].comprehension);
 		// console.log('request from ' + workerId + ', sending: ' + turkers[workerId].responses)
-		socket.emit('responses', {responses:turkers[workerId].responses, supplement: conditionAssignments[workerId].supplement})
+		socket.emit('responses', {responses: turkers[workerId].responses, supplement: turkers[workerId].supplement, comprehension: turkers[workerId].comp_actions, score: score})
 	})
 
 })
@@ -163,25 +181,7 @@ gamensp.on('connection', function(socket){
 	var hs = socket.handshake
 	var query = require('url').parse(socket.handshake.headers.referer, true).query
 	var condition = (query.condition) ? query.condition : 'a'
-	var user = (query.workerId) ? query.workerId : 'undefinedID'
-
-	fs.writeFile('resultCSVs/' + user + '-comprehension.txt', 'Comprehension Summary\n', function(err){
-		if(err){
-			console.log(err)
-		}
-	})
-
-	turkers[user] = {
-		task: 'new',
-		comp_actions: [],
-		responses: [],
-		comp_tasks: global_comp_tasks.sort(function(){return 0.5-Math.random()})
-	}
-
-	turkers[user].comp_tasks.splice(0, 0, "new")
-	turkers[user].comp_tasks.splice(turkers[user].comp_tasks.length, 0, "done")
-	console.log(turkers[user].comp_tasks)
-	global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
+	var workerId = (query.workerId) ? query.workerId : 'undefinedID'
 
 	var score = 0
 
@@ -191,7 +191,7 @@ gamensp.on('connection', function(socket){
 	var discovered = []
 	var time_points = []
 
-	console.log("Connection from user: " + user + ".")
+	console.log("Connection from workerId: " + workerId + ".")
 
 	var timer = function(seconds){
 		setTimeout(function(){
@@ -199,16 +199,16 @@ gamensp.on('connection', function(socket){
 				socket.emit('timer', seconds - 1)
 				timer(seconds - 1)
 			} else {
-				// var destination = '/exitsurvey.html?user=' + user + '&condition=' + condition
+				// var destination = '/exitsurvey.html?workerId=' + workerId + '&condition=' + condition
 				var destination = '/survey.html'
 				socket.emit('redirect', destination)
-				console.log("Redirecting " + user + ".")
+				console.log("Redirecting " + workerId + ".")
 
 				discovery_string = 'summary of discoveries\n'
 				for (var i = 0; i < discovered.length; i++){
 					discovery_string += discovered[i] + '\n'
 				}
-				fs.writeFile('resultCSVs/' + user + '-discoveries.txt', discovery_string, function(err){
+				fs.writeFile('results/' + workerId + '-discoveries.txt', discovery_string, function(err){
 					if(err){
 						console.log(err)
 					}
@@ -218,7 +218,7 @@ gamensp.on('connection', function(socket){
 				for (var i = 0; i < time_points.length; i++){
 					score_string += '"' + time_points[i].time + '","' + time_points[i].score + '"\n'
 				}
-				fs.writeFile('resultCSVs/' + user + '-scores.csv', score_string, function(err){
+				fs.writeFile('results/' + workerId + '-scores.csv', score_string, function(err){
 					if(err){
 						console.log(err)
 					}
@@ -231,11 +231,11 @@ gamensp.on('connection', function(socket){
 	timer(time_to_play)
 
 	if(use_db){
-		database.addPlayer(user, condition)
+		database.addPlayer(workerId, condition)
 	}
 
 	var first_line = '"' + getTimestamp() + '","connected"\n'
-	fs.writeFile('resultCSVs/' + user + '.csv', first_line, function(err){
+	fs.writeFile('results/' + workerId + '.csv', first_line, function(err){
 		if(err){
 			console.log(err)
 		}
@@ -243,7 +243,7 @@ gamensp.on('connection', function(socket){
 
 	var updateCSV = function(action){
 		var to_append = '"' + getTimestamp() + '","' + action + '"\n'
-		fs.appendFile('resultCSVs/' + user + '.csv', to_append, function(err){
+		fs.appendFile('results/' + workerId + '.csv', to_append, function(err){
 			if(err){
 				console.log(err)
 			}
@@ -251,7 +251,7 @@ gamensp.on('connection', function(socket){
 	}
 
 	var updateDB = function(action){
-		database.updatePlayer(user, condition, action, score)
+		database.updatePlayer(workerId, condition, action, score)
 	}
 
 	socket.on('action', function(action){
@@ -262,9 +262,11 @@ gamensp.on('connection', function(socket){
 		if(plus_score_actions.indexOf(action) >= 0){
 			score += 1
 			time_points.push({time:getTimestamp(), score:score})
+			turkers[workerId].score = score;
 		}else if(minus_score_actions.indexOf(action) >= 0){
 			score -= 1
 			time_points.push({time:getTimestamp(), score:score})
+			turkers[workerId].score = score;
 		}
 		updateCSV(action)
 		if(use_db){

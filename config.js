@@ -1,5 +1,5 @@
 var configs = {
-	"play_time": 60,
+	"play_time": 15,
 	"use_db": false,
 	"http_port": 8080,
 	"https_port": 4343,

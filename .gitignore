@@ -3,5 +3,6 @@ config.js
 assets/.DS_Store
 css/.DS_Store
 node_modules/
-resultCSVs/
 todo
+results/
+assignment-worker-id.txt

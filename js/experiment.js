@@ -24,11 +24,11 @@ function make_slides(f){
 
 	slides.instructions = slide({
 		name: "instructions",
-		button: function(){
-			setTimeout(function(){
-				exp.go()
-			}, 1000)
-		}
+		// button: function(){
+		// 	setTimeout(function(){
+		// 		exp.go()
+		// 	}, 1000)
+		// }
 	});
 
 	slides.supplementary = slide({
@@ -37,6 +37,7 @@ function make_slides(f){
 			$(".prompt").html('"' + exp.supplement + '"')
 		},
 		button: function(){
+			exp.go();
 		}
 	})
 
