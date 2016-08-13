@@ -17,14 +17,12 @@ To run the server:
 node server.js
 ```
 
-or with nohup:
-
-```
-nohup node server.js &
-```
-
 To access the experiment from the server machine, point your browser to `localhost:<port>/experiment.html`
 
+This repo also includes a small script for parsing the results that MTurk produces as a JSON. To use the script, move json-parser.js to the directory in which you have downloaded your results from MTurk, and run
+```
+node json-parser.js <directory results are stored in>
+```
 ##How it works
 Information about how the game works
 
