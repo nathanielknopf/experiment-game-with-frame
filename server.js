@@ -170,7 +170,7 @@ surveynsp.on('connection', function(socket){
 		console.log('request for: ' + turkers[workerId]);
 		console.log('comp: ' + turkers[workerId].comprehension);
 		// console.log('request from ' + workerId + ', sending: ' + turkers[workerId].responses)
-		socket.emit('responses', {responses: turkers[workerId].responses, supplement: turkers[workerId].supplement, comprehension: turkers[workerId].comp_actions, score: score})
+		socket.emit('responses', {responses: turkers[workerId].responses, supplement: turkers[workerId].supplement, comprehension: turkers[workerId].comp_actions, score: turkers[workerId].score})
 	})
 
 })
