@@ -2,6 +2,7 @@ var express = require('express')
 var app = express()
 var moment = require('moment')
 
+//pull parameters from config.js (TODO update to .json)
 var fs = require('fs')
 var vm = require('vm')
 vm.runInThisContext(fs.readFileSync(__dirname + '/config.js'))
@@ -10,12 +11,24 @@ var use_db = configs.use_db
 var time_to_play = configs.play_time
 var experiments_posted = 0
 
+//server side information about 
 var turkers = {}
+
+//comprehension tasks
 var global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
+//supplementary information from past subjects - currently hard coded in TODO: can be stored in a DB instead fairly easily
 var supplements = ["Collect as many rocks as you can. Throw them at the other objects to generate a 3rd object.", "Definitely throw the rocks.", "Look for the rocks and avoid everything else because they prevent you from moving.", "Trees and pools don't allow you to interact"]
+//the idea here would be to have some sort of a way to be able to look up available results from previous generations by generation number
+//in this way, someone would log on to the experiment, and do one of two things
+//	* if the number of chains started so far is less than the number desired, start a new chain and put this turker on generation 1
+//	* else, have them latch on to the "shortest" existing chain by taking the results from the smallest generation number currently available
+//i'd probably implement this with a list of lists, where the sublist at index i contains results from that generation. 
+//then, each new turker iterates through the list and pulls from the first sublist with info
+
+
 var conditionAssignments = {}
 
-
+//build https server if certs installed, else use http
 try {
 	var https = require('https')
 	var port = configs.https_port
@@ -32,6 +45,7 @@ try {
 	var io = require('socket.io').listen(server)
 }
 
+//params for mysql connection (similar to robert's setup)
 if(use_db){
 	var mysql = require('mysql')
 	var database = require(__dirname + '/js/database')
@@ -43,40 +57,40 @@ if(use_db){
 	})
 }
 
+//tell express to serve everything asked for within this dir
 app.use(express.static(__dirname));
-
 app.get(/^(.+)$/, function(req, res){ 
      console.log('static file request : ' + req.params);
      console.log("ACCESS: " + req.params[0])
      res.sendFile(__dirname + req.params[0])
  });
 
+//useful function for generating timestamps for data
 var getTimestamp = function(){
 	var date = moment().format().slice(0, 10)
 	var time = moment().format().slice(11, 19)
 	return date + ' ' + time
 }
 
-//namespace for assigning experiment parameters
+//socket.io allows for namespaces which handle connections seperately
+//each page in the experiment has a different namespace handling its function
+
+//namespace for assigning experiment parameters/conditions - first page in series
 var expnsp = io.of('/experiment-nsp')
 expnsp.on('connection', function(socket){
 
 	socket.on('request', function(workerPacket){
 
+		//this is the point where we'd iterate through the data structure holding information produced by past generations
+		//and find the smallest chain that this turker can latch on to
+
 		var workerId = workerPacket.workerId;
+		//these are hard coded variables for condition balancing - interpreted on client end
 		var condition = (experiments_posted % 2 == 0) ? 'a' : 'b';
 		var question_order = (experiments_posted < 6) ? 'q1' : 'q2';
 		var supplement = supplements[0];
-		// if(experiments_posted <= 2){
-		// 	supplement = supplements[0]
-		// }else if(experiments_posted <= 5){
-		// 	supplement = supplements[1]
-		// }else if(experiments_posted <= 8){
-		// 	supplement = supplements[2]
-		// }else{
-		// 	supplement = supplements[3]
-		// };
 
+		//how information about the turkers is stored server side - TODO implement with a DB so the server can survive resets
 		turkers[workerId] = {
 			task: 'new',
 			comp_actions: [],
@@ -88,7 +102,7 @@ expnsp.on('connection', function(socket){
 			experimenterNumber: experiments_posted,
 			score: 0
 		}
-
+		//make sure first and last comprehension tasks are "new" and "done" (keeping track of progress on client side)
 		turkers[workerId].comp_tasks.splice(0, 0, "new")
 		turkers[workerId].comp_tasks.splice(turkers[workerId].comp_tasks.length, 0, "done")
 		global_comp_tasks = ['all', 'fruits', 'animals', 'aquatics', 'apple', 'cow', 'fish']
@@ -99,8 +113,9 @@ expnsp.on('connection', function(socket){
 			}
 		})
 		
+		//server counts number of experiments posted for condition balancing
 		experiments_posted += 1
-		
+		//send information to the client about this experiment
 		socket.emit('condition', {condition: condition, question_order: question_order, supplement: supplement})
 
 		console.log('condition sent')
@@ -108,6 +123,7 @@ expnsp.on('connection', function(socket){
 
 })
 
+//namespace for quality assurance namespace (comprehension tasks)
 var qagamensp = io.of('/qagame-nsp')
 qagamensp.on('connection', function(socket){
 
@@ -117,7 +133,7 @@ qagamensp.on('connection', function(socket){
 		var next_task = turkers[workerId].comp_tasks[turkers[workerId].comp_tasks.indexOf(old_task) + 1]
 		turkers[workerId].task = next_task
 		turkers[workerId].comp_actions.push({task: next_task, actions: []})
-		// console.log('task: ' + next_task + ' for: ' + workerId)
+
 		if(next_task == 'done'){
 			var to_write = ''
 			for(var i = 0; i < turkers[workerId].comp_actions.length; i++){
@@ -128,12 +144,6 @@ qagamensp.on('connection', function(socket){
 				}
 				console.log(to_write)
 			}
-
-			// fs.writeFileSync('results/' + workerId + '-comprehension.txt', to_write, function(err){
-			// 	if(err){
-			// 		console.log(err)
-			// 	}
-			// })
 
 			socket.emit('redirect', '/thanks.html')
 		}else{
@@ -156,6 +166,7 @@ qagamensp.on('connection', function(socket){
 
 })
 
+//survey namespace retrieves questions answered after the experiment is over (including data for the next generation)
 var surveynsp = io.of('/survey-nsp')
 surveynsp.on('connection', function(socket){
 
@@ -163,6 +174,7 @@ surveynsp.on('connection', function(socket){
 		var workerId = response_packet.workerId
 		var response_packet = {question:response_packet.question, response: response_packet.response}
 		turkers[workerId].responses.push(response_packet)
+		//this would be the point at which we add to the data structure tracking responses from generations for new turkers
 	})
 
 	socket.on('request', function(request_packet){
@@ -175,6 +187,7 @@ surveynsp.on('connection', function(socket){
 
 })
 
+//actual meat of the game
 var gamensp = io.of('/game-nsp')
 gamensp.on('connection', function(socket){
 	
@@ -199,11 +212,12 @@ gamensp.on('connection', function(socket){
 				socket.emit('timer', seconds - 1)
 				timer(seconds - 1)
 			} else {
-				// var destination = '/exitsurvey.html?workerId=' + workerId + '&condition=' + condition
+				//redirect
 				var destination = '/survey.html'
 				socket.emit('redirect', destination)
 				console.log("Redirecting " + workerId + ".")
 
+				//log all results in discoveries file and scores file
 				discovery_string = 'summary of discoveries\n'
 				for (var i = 0; i < discovered.length; i++){
 					discovery_string += discovered[i] + '\n'
